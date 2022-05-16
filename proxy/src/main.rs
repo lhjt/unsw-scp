@@ -20,7 +20,7 @@ async fn main() -> std::io::Result<()> {
 
     tracing_subscriber::fmt::init();
 
-    info!("Launching server on port {}", PORT);
+    info!("Launching SCP proxy version {}", env!("CARGO_PKG_VERSION"));
 
     HttpServer::new(|| App::new().default_service(web::route().to(routes::route_whoami)))
         .on_connect(handle_client_cert)
