@@ -1,0 +1,13 @@
+[package]
+name = "proxy"
+version = "0.1.0"
+edition = "2021"
+
+[features]
+
+[dependencies]
+actix-tls = { version = "3.0.3", features = ["rustls"] }
+actix-web = { version = "4.0.1", features = ["rustls", "secure-cookies"] }
+rustls = "0.20.5"
+tokio = { version = "1.18.2", features = ["macros", "rt-multi-thread"] }
+x509-parser = "0.13.2"
