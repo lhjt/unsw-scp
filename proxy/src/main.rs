@@ -1,8 +1,11 @@
 #![warn(clippy::pedantic)]
 #![allow(clippy::unused_async)]
 
+use std::env;
+
 use actix_web::{web, App, HttpRequest, HttpResponse, HttpServer, Responder};
 use middleware::{handle_client_cert, Email};
+use tracing::info;
 
 mod middleware;
 mod tls;
@@ -28,6 +31,14 @@ async fn route_whoami(
 
 #[tokio::main]
 async fn main() -> std::io::Result<()> {
+    if env::var("RUST_LOG").is_err() {
+        env::set_var("RUST_LOG", "info");
+    }
+
+    tracing_subscriber::fmt::init();
+
+    info!("Launching server on port 8080");
+
     HttpServer::new(|| App::new().default_service(web::route().to(route_whoami)))
         .on_connect(handle_client_cert)
         .bind(("127.0.0.1", 8080))?
