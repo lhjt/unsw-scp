@@ -1,3 +1,6 @@
+#![warn(clippy::pedantic)]
+#![allow(clippy::unused_async)]
+
 use actix_tls::accept::rustls::TlsStream;
 use actix_web::{dev::Extensions, web, App, HttpResponse, HttpServer, Responder};
 use rustls::Certificate;
