@@ -3,6 +3,8 @@ use actix_web::{dev::Extensions, web, App, HttpResponse, HttpServer, Responder};
 use rustls::Certificate;
 use tokio::net::TcpStream;
 
+mod tls;
+
 #[derive(Debug, Clone)]
 struct ConnectionInfo(String);
 
@@ -64,35 +66,4 @@ async fn main() -> std::io::Result<()> {
         .bind(("127.0.0.1", 8080))?
         .run()
         .await
-}
-
-#[cfg(test)]
-mod tests {
-
-    #[test]
-    fn get_cert_data() {
-        if let Ok((_, pem)) = x509_parser::pem::parse_x509_pem(&std::fs::read("cert.pem").unwrap())
-        {
-            if let Ok((_, data)) = x509_parser::parse_x509_certificate(&pem.contents) {
-                let data = data
-                    .iter_extensions()
-                    .find_map(|e| match e.parsed_extension() {
-                        x509_parser::extensions::ParsedExtension::SubjectAlternativeName(
-                            san_data,
-                        ) => Some(san_data),
-                        _ => None,
-                    })
-                    .unwrap();
-
-                for d in &data.general_names {
-                    if let x509_parser::extensions::GeneralName::RFC822Name(n) = d {
-                        let email_components: Vec<&str> = n.split('@').collect();
-                        eprintln!("email_components = {:#?}", email_components);
-                    }
-                }
-            } else {
-                unimplemented!()
-            }
-        }
-    }
 }
