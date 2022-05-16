@@ -1,12 +1,17 @@
 use std::{borrow::Cow, vec};
 
+use tracing::{instrument, warn};
 use x509_parser::extensions::GeneralName;
 
 /// Get the emails from a certificate. The emails are taken from the `subjectAlternateNames` component of the certificate.
+#[instrument]
 pub fn get_emails_from_cert(certificate_data: &[u8]) -> Vec<Cow<str>> {
     let cert = match x509_parser::parse_x509_certificate(certificate_data) {
         Ok((_, cert)) => cert,
-        Err(_) => return vec![],
+        Err(e) => {
+            warn!("failed to parse certificate: {:?}", e);
+            return vec![];
+        }
     };
 
     // Get the SAN entry from the certificate

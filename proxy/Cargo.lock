@@ -1011,6 +1011,7 @@ dependencies = [
  "actix-web",
  "rustls",
  "tokio",
+ "tracing",
  "x509-parser",
 ]
 
