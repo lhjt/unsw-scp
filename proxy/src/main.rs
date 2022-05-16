@@ -15,7 +15,7 @@ mod routes;
 mod tls;
 
 const PORT: u16 = 8080;
-const CA_CERT: &str = "certs/rootCACert.pem";
+const CA_CERT: &str = "certs/rootCA.pem";
 const SERVER_CERT: &str = "certs/server-cert.pem";
 const SERVER_KEY: &str = "certs/server-key.pem";
 

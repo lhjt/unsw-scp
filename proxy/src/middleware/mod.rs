@@ -6,7 +6,7 @@ use tokio::net::TcpStream;
 use tracing::{debug, instrument, trace};
 
 #[derive(Debug, Clone)]
-pub(crate) struct Email(String);
+pub(crate) struct Email(pub(crate) String);
 
 #[instrument]
 /// Middlware that intercepts the client's TLS certificate and attempts to extract the stored emails.
