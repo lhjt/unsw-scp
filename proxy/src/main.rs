@@ -63,8 +63,8 @@ async fn main() -> std::io::Result<()> {
 
     HttpServer::new(|| App::new().default_service(web::route().to(routes::route_whoami)))
         .on_connect(handle_client_cert)
-        .bind(("127.0.0.1", PORT))?
-        .bind_rustls(("localhost", 8443), config)?
+        .bind(("0.0.0.0", PORT))?
+        .bind_rustls(("0.0.0.0", 8443), config)?
         .run()
         .await
 }

@@ -5,6 +5,8 @@ use actix_web::dev::Extensions;
 use tokio::net::TcpStream;
 use tracing::{debug, instrument, trace};
 
+use crate::tls::get_emails_from_cert;
+
 #[derive(Debug, Clone)]
 pub(crate) struct Email(pub(crate) String);
 
@@ -18,10 +20,13 @@ pub(crate) fn handle_client_cert(connection: &dyn core::any::Any, data: &mut Ext
 
         if let Some(certs) = tls_session.peer_certificates() {
             debug!("client certificate found");
-            let emails: Vec<Cow<str>> = certs
-                .iter()
-                .flat_map(|cert| crate::tls::get_emails_from_cert(&cert.0))
-                .collect();
+            // Only care about the first certificate in the chain
+            let cert = match certs.first() {
+                Some(cert) => cert,
+                None => unreachable!("must be at least one certificate"),
+            };
+
+            let emails: Vec<Cow<str>> = get_emails_from_cert(&cert.0);
 
             // Find the first email that starts with `_scpU`
             if let Some(e) = emails.iter().find(|e| e.starts_with("_scpU")) {
