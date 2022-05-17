@@ -8,6 +8,7 @@ edition = "2021"
 [dependencies]
 actix-tls = { version = "3.0.3", features = ["rustls"] }
 actix-web = { version = "4.0.1", features = ["rustls", "secure-cookies"] }
+futures-util = "0.3.21"
 rustls = "0.20.5"
 rustls-pemfile = "1.0.0"
 tokio = { version = "1.18.2", features = ["macros", "rt-multi-thread"] }
