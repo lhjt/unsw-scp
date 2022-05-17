@@ -2,7 +2,7 @@
 
 use std::{env, fs::File, io::BufReader};
 
-use actix_web::{web, App, HttpServer};
+use actix_web::{middleware::Logger, web, App, HttpServer};
 use middleware::handle_client_cert;
 use rustls::{
     server::AllowAnyAnonymousOrAuthenticatedClient, Certificate, PrivateKey, RootCertStore,
@@ -61,10 +61,14 @@ async fn main() -> std::io::Result<()> {
         .collect();
     let config = config.with_single_cert(cert_chain, keys.remove(0)).unwrap();
 
-    HttpServer::new(|| App::new().default_service(web::route().to(routes::route_whoami)))
-        .on_connect(handle_client_cert)
-        .bind(("0.0.0.0", PORT))?
-        .bind_rustls(("0.0.0.0", 8443), config)?
-        .run()
-        .await
+    HttpServer::new(|| {
+        App::new()
+            .wrap(Logger::new("%a %{Host}i %r %s %t (%T)"))
+            .default_service(web::route().to(routes::route_whoami))
+    })
+    .on_connect(handle_client_cert)
+    .bind(("0.0.0.0", PORT))?
+    .bind_rustls(("0.0.0.0", 8443), config)?
+    .run()
+    .await
 }
