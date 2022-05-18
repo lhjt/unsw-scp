@@ -7,6 +7,10 @@ use tracing::{debug, instrument, trace};
 
 use crate::tls::get_emails_from_cert;
 
+pub use redirect::CheckCertificate;
+
+mod redirect;
+
 #[derive(Debug, Clone)]
 pub(crate) struct Email(pub(crate) String);
 

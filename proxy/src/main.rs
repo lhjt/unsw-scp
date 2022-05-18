@@ -67,27 +67,7 @@ async fn main() -> std::io::Result<()> {
 
     HttpServer::new(|| {
         App::new()
-            // http -> https redirect
-            .wrap_fn(|sreq, srv| {
-                let host = sreq.connection_info().host().to_owned();
-                let uri = sreq.uri().clone();
-                let new_uri = format!("https://{}{}", host, uri);
-
-                // If the scheme is "https" then it will let other services below this wrap_fn
-                // handle the request and if it's "http" then a response with redirect status code
-                // will be sent whose "location" header will be same as before, with just "http"
-                // changed to "https"
-                //
-                if sreq.connection_info().scheme() == "https" {
-                    Either::Left(srv.call(sreq).map(|res| res))
-                } else {
-                    Either::Right(future::ready(Ok(sreq.into_response(
-                        HttpResponse::MovedPermanently()
-                            .append_header((http::header::LOCATION, new_uri))
-                            .finish(),
-                    ))))
-                }
-            })
+            .wrap(middleware::CheckCertificate)
             .wrap(Logger::new("%a %{Host}i %r %s %t (%T)"))
             .default_service(web::route().to(routes::route_whoami))
     })
