@@ -10,16 +10,15 @@ struct ExtraClaimsData {
 #[derive(Debug, Clone)]
 pub struct ClaimsData {
     pub username: String,
-    pub user_id: String,
+    pub user_id:  String,
 }
 
 impl ExtraClaimsData {
-    fn new(username: String) -> Self {
-        Self { username }
-    }
+    fn new(username: String) -> Self { Self { username } }
 }
 
-/// Create a JWT for a user to be appended for intra service communication headers. Tokens are valid for 60s.
+/// Create a JWT for a user to be appended for intra service communication headers. Tokens are valid
+/// for 60s.
 pub fn create_jwt(user_id: String, username: String, key_pair_pem: &str) -> anyhow::Result<String> {
     let additional = ExtraClaimsData::new(username);
 
@@ -41,6 +40,6 @@ pub fn verify_jwt(token: &str, key_pair_pem: &str) -> anyhow::Result<ClaimsData>
 
     Ok(ClaimsData {
         username: claims.custom.username,
-        user_id: claims.subject.context("claims did not have subject")?,
+        user_id:  claims.subject.context("claims did not have subject")?,
     })
 }
