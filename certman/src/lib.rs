@@ -69,15 +69,37 @@ pub fn get_ca_cert(ca_pem: &str, ca_key_pem: &str) -> anyhow::Result<Certificate
     Certificate::from_params(params).map_err(anyhow::Error::msg)
 }
 
+/// Generate a pfx file containing the client cert and key.
+///
+/// # Errors
+///
+/// May error if invalid parameters are passed.
+pub fn generate_pfx(
+    client_cert: &Certificate,
+    ca_cert: &Certificate,
+    name: &str,
+    password: &str,
+) -> anyhow::Result<Vec<u8>> {
+    let pfx = p12::PFX::new(
+        &client_cert.serialize_der_with_signer(ca_cert)?,
+        &client_cert.serialize_private_key_der(),
+        None,
+        password,
+        name,
+    );
+
+    Ok(pfx.context("failed to crate pfx archive")?.to_der())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
     fn it_creates_ca_cert() {
-        let cert = create_ca_certificate().unwrap();
-        std::fs::write("rootCA.pem", cert.serialize_pem().unwrap()).ok();
-        std::fs::write("rootCA-key.pem", cert.serialize_private_key_pem()).ok();
+        let ca_cert = create_ca_certificate().unwrap();
+        std::fs::write("rootCA.pem", ca_cert.serialize_pem().unwrap()).ok();
+        std::fs::write("rootCA-key.pem", ca_cert.serialize_private_key_pem()).ok();
 
         let client_cert = create_client_cert(
             "Test User 1".to_owned(),
@@ -87,20 +109,16 @@ mod tests {
 
         std::fs::write(
             "client-cert.pem",
-            client_cert.serialize_pem_with_signer(&cert).unwrap(),
+            client_cert.serialize_pem_with_signer(&ca_cert).unwrap(),
         )
         .ok();
         std::fs::write("client-key.pem", client_cert.serialize_private_key_pem()).ok();
 
-        let pfx = p12::PFX::new(
-            &client_cert.serialize_der_with_signer(&cert).unwrap(),
-            &client_cert.serialize_private_key_der(),
-            None,
-            "test-password",
-            "user 1",
-        );
-
-        std::fs::write("certs.pfx", pfx.unwrap().to_der()).ok();
+        std::fs::write(
+            "certs.pfx",
+            generate_pfx(&client_cert, &ca_cert, "Test User 1", "password").unwrap(),
+        )
+        .ok();
     }
 
     #[test]
@@ -122,14 +140,10 @@ mod tests {
         .ok();
         std::fs::write("client-key.pem", client_cert.serialize_private_key_pem()).ok();
 
-        let pfx = p12::PFX::new(
-            &client_cert.serialize_der_with_signer(&ca_cert).unwrap(),
-            &client_cert.serialize_private_key_der(),
-            None,
-            "test-password",
-            "Test User 2",
-        );
-
-        std::fs::write("certs.pfx", pfx.unwrap().to_der()).ok();
+        std::fs::write(
+            "certs.pfx",
+            generate_pfx(&client_cert, &ca_cert, "Test User 2", "password").unwrap(),
+        )
+        .ok();
     }
 }
