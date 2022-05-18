@@ -1,10 +1,13 @@
 use std::future::{ready, Ready};
 
-use actix_web::body::EitherBody;
-use actix_web::dev::{self, ServiceRequest, ServiceResponse};
-use actix_web::dev::{Service, Transform};
-use actix_web::http::header::{HeaderName, HeaderValue};
-use actix_web::{http, Error, HttpResponse};
+use actix_web::{
+    body::EitherBody,
+    dev::{self, Service, ServiceRequest, ServiceResponse, Transform},
+    http,
+    http::header::{HeaderName, HeaderValue},
+    Error,
+    HttpResponse,
+};
 use futures_util::future::LocalBoxFuture;
 
 use super::Email;
@@ -19,11 +22,11 @@ where
     S::Future: 'static,
     B: 'static,
 {
-    type Response = ServiceResponse<EitherBody<B>>;
     type Error = Error;
-    type InitError = ();
-    type Transform = CheckCertificateMiddleware<S>;
     type Future = Ready<Result<Self::Transform, Self::InitError>>;
+    type InitError = ();
+    type Response = ServiceResponse<EitherBody<B>>;
+    type Transform = CheckCertificateMiddleware<S>;
 
     fn new_transform(&self, service: S) -> Self::Future {
         ready(Ok(CheckCertificateMiddleware { service }))
@@ -39,9 +42,9 @@ where
     S::Future: 'static,
     B: 'static,
 {
-    type Response = ServiceResponse<EitherBody<B>>;
     type Error = Error;
     type Future = LocalBoxFuture<'static, Result<Self::Response, Self::Error>>;
+    type Response = ServiceResponse<EitherBody<B>>;
 
     dev::forward_ready!(service);
 
@@ -70,7 +73,7 @@ where
                 request
                     .headers_mut()
                     .insert(HeaderName::from_static("x-auth"), header_response);
-            }
+            },
             // There is no client cert available
             // Display a warning and a link to collect the certs
             None => {
@@ -89,7 +92,7 @@ where
 
                     return Box::pin(async { Ok(ServiceResponse::new(request, response)) });
                 }
-            }
+            },
         };
 
         let res = self.service.call(request);

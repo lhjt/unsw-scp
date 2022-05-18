@@ -3,7 +3,8 @@ use std::{borrow::Cow, vec};
 use tracing::{debug, instrument, warn};
 use x509_parser::extensions::GeneralName;
 
-/// Get the emails from a certificate. The emails are taken from the `subjectAlternateNames` component of the certificate.
+/// Get the emails from a certificate. The emails are taken from the `subjectAlternateNames`
+/// component of the certificate.
 #[instrument]
 pub fn get_emails_from_cert(certificate_data: &[u8]) -> Vec<Cow<str>> {
     debug!("fetching emails from certificate");
@@ -12,7 +13,7 @@ pub fn get_emails_from_cert(certificate_data: &[u8]) -> Vec<Cow<str>> {
         Err(e) => {
             warn!("failed to parse certificate: {:?}", e);
             return vec![];
-        }
+        },
     };
 
     // Get the SAN entry from the certificate
@@ -21,7 +22,7 @@ pub fn get_emails_from_cert(certificate_data: &[u8]) -> Vec<Cow<str>> {
         .find_map(|e| match e.parsed_extension() {
             x509_parser::extensions::ParsedExtension::SubjectAlternativeName(san_data) => {
                 Some(san_data)
-            }
+            },
             _ => None,
         }) {
         Some(e) => e,

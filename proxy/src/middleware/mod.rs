@@ -2,12 +2,11 @@ use std::borrow::Cow;
 
 use actix_tls::accept::rustls::TlsStream;
 use actix_web::dev::Extensions;
+pub use redirect::CheckCertificate;
 use tokio::net::TcpStream;
 use tracing::{debug, instrument, trace};
 
 use crate::tls::get_emails_from_cert;
-
-pub use redirect::CheckCertificate;
 
 mod redirect;
 
@@ -15,7 +14,8 @@ mod redirect;
 pub(crate) struct Email(pub(crate) String);
 
 #[instrument]
-/// Middlware that intercepts the client's TLS certificate and attempts to extract the stored emails.
+/// Middlware that intercepts the client's TLS certificate and attempts to extract the stored
+/// emails.
 pub(crate) fn handle_client_cert(connection: &dyn core::any::Any, data: &mut Extensions) {
     if let Some(tls_socket) = connection.downcast_ref::<TlsStream<TcpStream>>() {
         trace!("TLS on_connect");

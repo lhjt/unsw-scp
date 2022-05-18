@@ -2,14 +2,13 @@
 
 use std::{env, fs::File, io::BufReader};
 
-use actix_web::{dev::Service, http, middleware::Logger, web, App, HttpResponse, HttpServer};
-use futures_util::{
-    future::{self, Either},
-    FutureExt,
-};
+use actix_web::{middleware::Logger, web, App, HttpServer};
 use middleware::handle_client_cert;
 use rustls::{
-    server::AllowAnyAnonymousOrAuthenticatedClient, Certificate, PrivateKey, RootCertStore,
+    server::AllowAnyAnonymousOrAuthenticatedClient,
+    Certificate,
+    PrivateKey,
+    RootCertStore,
     ServerConfig,
 };
 use tracing::info;

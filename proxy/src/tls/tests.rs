@@ -22,10 +22,10 @@ g87GfZqig0TyS84=
         Ok((_, pem)) => {
             let emails = get_emails_from_cert(&pem.contents);
             assert_eq!(emails.len(), 3);
-        }
+        },
         Err(e) => {
             panic!("{:#?}", e)
-        }
+        },
     }
 }
 
@@ -50,10 +50,10 @@ gNIwej+FX/uaCiy/m8CatWoc72+W
         Ok((_, pem)) => {
             let emails = get_emails_from_cert(&pem.contents);
             assert_eq!(emails.len(), 1);
-        }
+        },
         Err(e) => {
             panic!("{:#?}", e)
-        }
+        },
     }
 }
 
@@ -77,9 +77,9 @@ MAoGCCqGSM49BAMEA0gAMEUCIQDNTsS3QmMOsODpKN5MQzReOV6PbVN5rnq6SJha
         Ok((_, pem)) => {
             let emails = get_emails_from_cert(&pem.contents);
             assert_eq!(emails.len(), 0);
-        }
+        },
         Err(e) => {
             panic!("{:#?}", e)
-        }
+        },
     }
 }
