@@ -50,9 +50,6 @@ pub fn create_client_cert(name: String, user_id: String) -> anyhow::Result<Certi
         .distinguished_name
         .push(DnType::CommonName, DnValue::Utf8String(name));
     params.subject_alt_names.push(SanType::Rfc822Name(user_id));
-    // params
-    //     .subject_alt_names
-    //     .push(SanType::DnsName("localhost".to_string()));
 
     Certificate::from_params(params).map_err(anyhow::Error::msg)
 }
