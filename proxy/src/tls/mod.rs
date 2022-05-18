@@ -1,11 +1,25 @@
 use std::{borrow::Cow, fs::File, io::BufReader, vec};
 
+use once_cell::sync::OnceCell;
 use rustls::{
     server::AllowAnyAnonymousOrAuthenticatedClient, Certificate, PrivateKey, RootCertStore,
     ServerConfig,
 };
 use tracing::{debug, instrument, warn};
 use x509_parser::extensions::GeneralName;
+
+pub static EDDSA_KEY_PEM: OnceCell<Cow<str>> = OnceCell::new();
+
+pub fn initialise_key_pem() {
+    let string_data = std::fs::read_to_string(
+        std::env::var("JWT_PEM").unwrap_or_else(|_| "certs/jwt-key.pem".to_string()),
+    )
+    .expect("could not read JWT keys");
+
+    EDDSA_KEY_PEM
+        .set(string_data.into())
+        .expect("could not read EDDSA private keys");
+}
 
 /// Get the emails from a certificate. The emails are taken from the `subjectAlternateNames`
 /// component of the certificate.

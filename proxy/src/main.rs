@@ -22,6 +22,7 @@ async fn main() -> std::io::Result<()> {
     }
 
     tracing_subscriber::fmt::init();
+    tls::initialise_key_pem();
 
     info!("Launching SCP proxy version {}", env!("CARGO_PKG_VERSION"));
 

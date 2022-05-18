@@ -5,10 +5,10 @@ use actix_web::{
     dev::{self, Service, ServiceRequest, ServiceResponse, Transform},
     http,
     http::header::{HeaderName, HeaderValue},
-    Error,
-    HttpResponse,
+    Error, HttpResponse,
 };
 use futures_util::future::LocalBoxFuture;
+use tracing::error;
 
 use super::Email;
 // TODO: move to env
@@ -67,12 +67,22 @@ where
 
         match request.conn_data::<Email>() {
             Some(Email(e)) => {
-                // TODO: Construct authentication JWT
-                let header_response =
-                    HeaderValue::from_str(e).expect("cert email contains illegal characters");
-                request
-                    .headers_mut()
-                    .insert(HeaderName::from_static("x-auth"), header_response);
+                let email = e.clone();
+                let jwt = match intra_jwt::create_jwt(
+                    email,
+                    "placeholder-username".to_string(),
+                    crate::tls::EDDSA_KEY_PEM.get().unwrap(),
+                ) {
+                    Ok(token) => token,
+                    Err(e) => {
+                        error!("unable to create jwt: {}", e);
+                        panic!()
+                    },
+                };
+                request.headers_mut().insert(
+                    HeaderName::from_static("x-auth"),
+                    HeaderValue::from_str(&jwt).unwrap(),
+                );
             },
             // There is no client cert available
             // Display a warning and a link to collect the certs
