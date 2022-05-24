@@ -3,8 +3,8 @@
 use std::env;
 
 use actix_web::{middleware::Logger, web, App, HttpServer};
+use awc::Client;
 use middleware::handle_client_cert;
-
 use tracing::info;
 
 use crate::tls::create_tls_server_config;
@@ -28,6 +28,7 @@ async fn main() -> std::io::Result<()> {
 
     HttpServer::new(|| {
         App::new()
+            .app_data(web::Data::new(Client::default()))
             .wrap(middleware::CheckCertificate)
             .wrap(Logger::new("%a %{Host}i %r %s %t (%T)"))
             .default_service(web::route().to(routes::route_whoami))
