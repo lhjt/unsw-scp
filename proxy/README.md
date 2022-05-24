@@ -2,11 +2,41 @@
 
 This component is responsible for all the network routing requests and is the main endpoint that users will reach when communicating with the CTF platform. It exhibits the use of mTLS to identify clients.
 
+## Operational Information
+
+### Headers - `X-Scp-Auth`
+
+The proxy injects the `X-Scp-Auth` header on all authenticated requests to services. The header's value is a JWT that contains information about the user that is making the request.
+
+The tokens are valid for 60 seconds and have the following format:
+
+```json
+{
+  "iat": 1653405080,
+  "exp": 1653405140,
+  "nbf": 1653405080,
+  "iss": "scp",
+  "sub": "_scpUz182381+hs@student.host.domain",
+  "username": "placeholder-username"
+}
+```
+
+Currently, the **only** service that may ever receive requests without this header is the identity service, which will send back the login page notice, indicating to the user that they must log install their certificates.
+
+### Token Format
+
+The `iss` field should **always** be `scp`, and the `sub` value will be the user's ID encoded in an email format.
+
+The actual ID of the user is located between the `_scpU` and `+` in the email.
+
+The `username` field will eventually contain the full name of the user that is connecting, but that has not been implemented yet.
+
 ## Deployment
 
 ### Environment Variables
 
-| Name           | Description                                                            | Default      |
-| -------------- | ---------------------------------------------------------------------- | ------------ |
-| `BASE_DOMAIN`  | The public-facing base domain on which the proxy will be reachable at. | `local.host` |
-| `REGISTRY_URL` | The URL where the service registry provider is available at.           | `registry`   |
+| Name           | Description                                                                                               | Default             |
+| -------------- | --------------------------------------------------------------------------------------------------------- | ------------------- |
+| `BASE_DOMAIN`  | The public-facing base domain on which the proxy will be reachable at.                                    | `local.host`        |
+| `REGISTRY_URL` | The URL where the service registry provider is available at.                                              | `registry`          |
+| `JWT_PEM`      | The location of the PEM key used to sign JWT requests. The key is expected to be a `Ed25519` private key. | `certs/jwt-key.pem` |

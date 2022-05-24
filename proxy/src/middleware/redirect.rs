@@ -5,8 +5,7 @@ use actix_web::{
     dev::{self, Service, ServiceRequest, ServiceResponse, Transform},
     http,
     http::header::{HeaderName, HeaderValue},
-    Error,
-    HttpResponse,
+    Error, HttpResponse,
 };
 use futures_util::future::LocalBoxFuture;
 use tracing::error;
@@ -81,7 +80,7 @@ where
                     },
                 };
                 request.headers_mut().insert(
-                    HeaderName::from_static("x-auth"),
+                    HeaderName::from_static("x-scp-auth"),
                     HeaderValue::from_str(&jwt).unwrap(),
                 );
             },
