@@ -21,7 +21,7 @@ The tokens are valid for 60 seconds and have the following format:
 }
 ```
 
-Currently, the **only** service that may ever receive requests without this header is the identity service, which will send back the login page notice, indicating to the user that they must log install their certificates.
+Currently, the **only** service that may ever receive requests without this header is the identity service, which will send back the login page notice, indicating to the user that they must install their certificates.
 
 ### Token Format
 
