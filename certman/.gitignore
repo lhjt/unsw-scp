@@ -12,3 +12,5 @@ target/
 
 # Certificates
 certs/
+*.pem
+*.pfx
