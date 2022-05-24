@@ -2,12 +2,19 @@
 
 use anyhow::Context;
 use rcgen::{
-    BasicConstraints, Certificate, CertificateParams, DnType, DnValue, IsCa, KeyPair, SanType,
+    BasicConstraints,
+    Certificate,
+    CertificateParams,
+    DnType,
+    DnValue,
+    IsCa,
+    KeyPair,
+    SanType,
 };
 
 #[derive(Debug, Clone)]
 pub struct ClientCertificatePair {
-    pub key: String,
+    pub key:  String,
     pub cert: String,
 }
 
