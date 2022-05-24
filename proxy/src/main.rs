@@ -5,15 +5,21 @@ use std::env;
 use actix_web::{middleware::Logger, web, App, HttpServer};
 use awc::Client;
 use middleware::handle_client_cert;
+use once_cell::sync::Lazy;
 use tracing::info;
 
 use crate::tls::create_tls_server_config;
 
+mod env_util;
 mod middleware;
 mod routes;
 mod tls;
 
 const PORT: u16 = 8080;
+
+// env declarations
+static BASE_DOMAIN: Lazy<String> = env_util::lazy_env!("BASE_DOMAIN", "local.host:8443");
+static REGISTRY_URL: Lazy<String> = env_util::lazy_env!("REGISTRY_URL", "registry");
 
 #[tokio::main]
 async fn main() -> std::io::Result<()> {

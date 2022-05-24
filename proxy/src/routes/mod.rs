@@ -5,7 +5,7 @@ use awc::Client;
 use tracing::instrument;
 use url::Url;
 
-use crate::middleware::Email;
+use crate::{middleware::Email, BASE_DOMAIN};
 
 #[instrument(skip(payload, client))]
 pub(crate) async fn route_whoami(
@@ -19,8 +19,6 @@ pub(crate) async fn route_whoami(
         // Make a more elegant page
         new_url = Url::parse("http://gaia.svc.cluster.local").unwrap();
     } else {
-        // TODO: ingest from environment variables
-        let CTF_DOMAIN = "ctf.local.host:8443";
         // TODO: grab the subdomain
         let domain = match req.uri().host() {
             Some(s) => s,
@@ -47,7 +45,7 @@ pub(crate) async fn route_whoami(
             Some(_) | None => {
                 // Redirect to the ctf page
                 return Ok(HttpResponse::Found()
-                    .insert_header(("Location", format!("https://{}", CTF_DOMAIN)))
+                    .insert_header(("Location", format!("https://ctf.{}", BASE_DOMAIN.as_str())))
                     .finish());
             },
         }
