@@ -45,4 +45,4 @@ The actual keyfile that is provided to the proxy and other services should be en
 | -------------- | ---------------------------------------------------------------------- | ------------------- |
 | `BASE_DOMAIN`  | The public-facing base domain on which the proxy will be reachable at. | `local.host`        |
 | `REGISTRY_URL` | The URL where the service registry provider is available at.           | `registry`          |
-| `JWT_PEM`      | The location of the PEM key used to sign JWT requests.                 | `certs/jwt-key.pem` |
+| `JWT_PEM`      | The location of the PEM key used to sign JWT tokens.                   | `certs/jwt-key.pem` |
