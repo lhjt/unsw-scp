@@ -13,7 +13,7 @@ use tracing::error;
 
 use super::Email;
 // TODO: move to env
-const DOMAIN: &str = "localhost:8443";
+const DOMAIN: &str = "login.local.host:8443";
 
 pub struct CheckCertificate;
 

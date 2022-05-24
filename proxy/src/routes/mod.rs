@@ -13,32 +13,46 @@ pub(crate) async fn route_whoami(
     payload: web::Payload,
     client: web::Data<Client>,
 ) -> Result<HttpResponse, Error> {
-    if let Some(Email(email)) = req.conn_data::<Email>() {
-        HttpResponse::Ok()
-            .insert_header(("x-jwt", req.headers().get("x-auth").unwrap()))
-            .body(format!("Hello, {:?}", &email))
-    } else if req.path() == "/login" {
-        return Ok(HttpResponse::Unauthorized().body(
-            "You do not have your certificate installed. Please install it to continue.".to_owned(),
-        ));
+    // Middleware should automatically redirect to login if there is no cert
+    let mut new_url: Url;
+    if req.path() == "/login" && req.conn_data::<Email>().is_none() {
+        // Make a more elegant page
+        new_url = Url::parse("http://gaia.svc.cluster.local").unwrap();
     } else {
-        HttpResponse::TemporaryRedirect()
-            .append_header(("Location", "/login"))
-            .body("Unauthorized: your certificate could not be validated.".to_owned())
-    };
+        // TODO: ingest from environment variables
+        let CTF_DOMAIN = "ctf.local.host:8443";
+        // TODO: grab the subdomain
+        let domain = match req.uri().host() {
+            Some(s) => s,
+            None => {
+                // This should not be possible
+                return Ok(HttpResponse::InternalServerError().body("Internal server error: EC.SM"));
+            },
+        };
 
-    // TODO: grab the subdomain
-    let domain = match req.uri().host() {
-        Some(s) => s,
-        None => {
-            // This should not be possible
-            return Ok(HttpResponse::InternalServerError().body("Internal server error: EC.SM"));
-        },
-    };
+        // remove the last 2 elements
+        let mut subdomain = domain.split('.').rev().skip(2);
+        match subdomain.next() {
+            Some("ctf") => match subdomain.next() {
+                Some(s) => {
+                    // TODO: Check with the service registry to see if this should be proxied
+                    // somewhere Return placeholder for the time being
+                    new_url = Url::parse("http://placeholder.challenge.svc.cluster.local").unwrap();
+                },
+                None => {
+                    // TODO: Show the dashboard
+                    new_url = Url::parse("https://httpbin.org").unwrap();
+                },
+            },
+            Some(_) | None => {
+                // Redirect to the ctf page
+                return Ok(HttpResponse::Found()
+                    .insert_header(("Location", format!("https://{}", CTF_DOMAIN)))
+                    .finish());
+            },
+        }
+    }
 
-    // TODO: Create service registry system
-    let url = Url::parse("https://csesoc.app/").unwrap();
-    let mut new_url = url;
     new_url.set_path(req.uri().path());
     new_url.set_query(req.uri().query());
 
