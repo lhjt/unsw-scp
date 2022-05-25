@@ -39,6 +39,7 @@ async fn main() -> anyhow::Result<()> {
                 web::scope("/api")
                     .service(routes::set_user_roles)
                     .service(routes::get_user_roles)
+                    .service(routes::get_users)
                     .service(routes::self_service::get_roles)
                     .service(routes::self_service::get_id),
             )

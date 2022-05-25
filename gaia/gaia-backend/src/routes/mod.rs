@@ -4,7 +4,9 @@ use actix_web::{
     error::{ErrorForbidden, ErrorInternalServerError},
     get, post, web, Error, HttpRequest, HttpResponse,
 };
-use sea_orm::DatabaseConnection;
+use entity::{role, user};
+use sea_orm::{DatabaseConnection, EntityTrait};
+use serde::{Deserialize, Serialize};
 
 use crate::utils::{self, get_token_id, ise};
 
@@ -56,4 +58,45 @@ pub(crate) async fn set_user_roles(
     utils::set_roles(&user_id, new_roles.0, &conn).await?;
 
     Ok(HttpResponse::Ok().finish())
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+struct UserWithRole {
+    pub id: String,
+    pub email: String,
+    pub name: Option<String>,
+    pub roles: Vec<String>,
+}
+
+#[get("/users")]
+pub(crate) async fn get_users(
+    req: HttpRequest,
+    conn: web::Data<DatabaseConnection>,
+) -> Result<HttpResponse, Error> {
+    // First ensure that the user making this request has the "tutor" or "admin" role
+    let roles = utils::get_roles(&get_token_id(&req)?, &conn)
+        .await
+        .map_err(ise!("GR"))?;
+    if !roles.contains("admin") && !roles.contains("tutor") {
+        return Err(ErrorForbidden(
+            "You do not have permission to perform this action.",
+        ));
+    }
+
+    // Get all users and their roles
+    let users_with_roles: Vec<UserWithRole> = user::Entity::find()
+        .find_with_related(role::Entity)
+        .all(conn.as_ref())
+        .await
+        .map_err(ise!("AUFWR"))?
+        .into_iter()
+        .map(|(user, roles)| UserWithRole {
+            id: user.user_id,
+            email: user.email,
+            name: user.name,
+            roles: roles.into_iter().map(|f| f.name).collect(),
+        })
+        .collect();
+
+    Ok(HttpResponse::Ok().json(users_with_roles))
 }
