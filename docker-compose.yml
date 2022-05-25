@@ -30,3 +30,10 @@ services:
     volumes:
       - ./data/gaia-backend:/data
       - ./data/certs:/certs
+  gaia-frontend:
+    build:
+      context: gaia/gaia-frontend/
+      dockerfile: Dockerfile
+    image: ct2-gaia-frontend
+    ports:
+      - "8082:80"
