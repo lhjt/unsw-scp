@@ -3,12 +3,22 @@ name = "gaia-backend"
 version = "0.1.0"
 edition = "2021"
 
+[workspace]
+members = [".", "entity", "migration"]
+
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 actix-web = "4.0.1"
+anyhow = "1.0.57"
 certman = { path = "../../certman" }
+entity = { path = "entity" }
 intra-jwt = { path = "../../intra-jwt" }
+migration = { path = "migration" }
+sea-orm = { version = "0.8.0", default-features = false, features = ["macros", "debug-print", "sqlx-sqlite", "runtime-tokio-rustls"] }
 serde = { version = "1.0.137", features = ["derive"] }
 serde_json = "1.0.81"
 tokio = { version = "1.18.2", features = ["rt-multi-thread", "macros"] }
+tracing-subscriber = "0.3.11"
+
+[features]
