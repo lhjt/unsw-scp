@@ -33,7 +33,8 @@ impl MigrationTrait for Migration {
                             .from_tbl(role::Entity)
                             .from_col(role::Column::UserId)
                             .to_tbl(user::Entity)
-                            .to_col(user::Column::UserId),
+                            .to_col(user::Column::UserId)
+                            .on_delete(ForeignKeyAction::Cascade),
                     )
                     .to_owned(),
             )
