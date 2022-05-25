@@ -77,11 +77,13 @@ pub(crate) async fn enrol_user(
         .to(data.email.clone())
         .from((FROM_ADDR.to_string(), "Security Challenges Platform"))
         .subject("COMP6443 Client Certificates").text(format!(r#"
-Attached is your client certificate for COMP6443 at UNSW. You will have to download this pfx archive and import it into your keychain.
+Attached is your client certificate for COMP6443 at UNSW. You will have to download this certificate archive and import it into your keychain.
 
-Your link to download the archive is here: {}
+Your link to download your certificate package is: {}
 
-It is valid for 30 minutes. The password to install the pfx archive is {}. Do not share these certificates with anyone else, as they will be able to access your account.
+- It is valid for 30 minutes.
+- The password to install the pfx archive is: {}
+- Do not share these certificates with anyone else, as they will be able to access your account.
         "#, link, hash_result)).build().map_err(ise!("EUBE"))?;
 
     let mut mailer = SmtpClient::new_simple(SMTP_ADDR.as_str())
@@ -114,15 +116,12 @@ pub(crate) async fn download_certs(
     })?;
 
     // Check if the email has already been used
-    if user::Entity::find()
+    let already_generated = user::Entity::find()
         .filter(user::Column::Email.eq(claims.signup_email.clone()))
         .one(conn.as_ref())
         .await
         .map_err(ise!("DCFO"))?
-        .is_some()
-    {
-        return Err(ErrorBadRequest("This email has already downloaded their relevant tokens. Please contact an administrator if this is an error."));
-    }
+        .is_some();
 
     // Generate password
     let password = utils::get_password_from_id(&claims.user_id);
@@ -137,34 +136,36 @@ pub(crate) async fn download_certs(
     let client_pfx = cert_utils::generate_pfx(&cert, &ca_cert, "6443-certificates", &password)
         .map_err(ise!("DCGPX"))?;
 
-    let txn = conn.begin().await.map_err(ise!("DCBTX"))?;
-    let uid = claims
-        .user_id
-        .strip_prefix("_scpU")
-        .unwrap()
-        .strip_suffix("@unsw.scp.platform")
-        .unwrap()
-        .to_string();
+    if !already_generated {
+        let txn = conn.begin().await.map_err(ise!("DCBTX"))?;
+        let uid = claims
+            .user_id
+            .strip_prefix("_scpU")
+            .unwrap()
+            .strip_suffix("@unsw.scp.platform")
+            .unwrap()
+            .to_string();
 
-    // Update database
-    let user = entity::user::ActiveModel {
-        email: sea_orm::ActiveValue::Set(claims.signup_email),
-        user_id: sea_orm::ActiveValue::Set(uid.clone()),
-        ..Default::default()
-    };
+        // Update database
+        let user = entity::user::ActiveModel {
+            email: sea_orm::ActiveValue::Set(claims.signup_email),
+            user_id: sea_orm::ActiveValue::Set(uid.clone()),
+            ..Default::default()
+        };
 
-    user.insert(&txn).await.map_err(ise!("DCIUM"))?;
-    // Add student role by default
-    let role = entity::role::ActiveModel {
-        name: sea_orm::ActiveValue::Set("student".to_string()),
-        user_id: sea_orm::ActiveValue::Set(uid.clone()),
-        ..Default::default()
-    };
+        user.insert(&txn).await.map_err(ise!("DCIUM"))?;
+        // Add student role by default
+        let role = entity::role::ActiveModel {
+            name: sea_orm::ActiveValue::Set("student".to_string()),
+            user_id: sea_orm::ActiveValue::Set(uid.clone()),
+            ..Default::default()
+        };
 
-    role.insert(&txn).await.map_err(ise!("DCIRR"))?;
+        role.insert(&txn).await.map_err(ise!("DCIRR"))?;
 
-    // Commit transaction
-    txn.commit().await.map_err(ise!("DCCTX"))?;
+        // Commit transaction
+        txn.commit().await.map_err(ise!("DCCTX"))?;
+    }
 
     // Send cert to client
     Ok(HttpResponse::Ok()
