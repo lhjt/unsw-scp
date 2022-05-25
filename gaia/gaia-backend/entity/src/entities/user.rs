@@ -8,6 +8,9 @@ pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
     pub user_id: String,
     pub name: Option<String>,
+    /// The email that the user used to request their certificates.
+    #[sea_orm(unique, indexed)]
+    pub email: String,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
