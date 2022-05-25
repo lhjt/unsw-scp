@@ -23,3 +23,9 @@ services:
     image: ct2-gaia-backend
     ports:
       - "8081:8081"
+    environment:
+      - "DB_URI=sqlite:///data/db.db"
+      - "JWT_PEM_LOC=/certs/jwt-key.pem"
+    volumes:
+      - ./data/gaia-backend:/data
+      - ./data/certs:/certs

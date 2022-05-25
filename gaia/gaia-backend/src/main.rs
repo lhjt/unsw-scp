@@ -9,6 +9,7 @@ use anyhow::Context;
 use migration::{Migrator, MigratorTrait};
 use once_cell::sync::Lazy;
 
+mod env_util;
 mod routes;
 mod utils;
 
@@ -18,6 +19,8 @@ static JWT_PEM: Lazy<String> = once_cell::sync::Lazy::new(|| match env::var("JWT
         .unwrap_or_else(|_| panic!("JET PEM missing")),
 });
 
+static DB_URI: Lazy<String> = env_util::lazy_env!("DB_URI", "sqlite://./db.db");
+
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     if std::env::var("RUST_LOG").is_err() {
@@ -25,7 +28,7 @@ async fn main() -> anyhow::Result<()> {
     }
     tracing_subscriber::fmt::init();
 
-    let connection = sea_orm::Database::connect("sqlite://./db.db").await?;
+    let connection = sea_orm::Database::connect(DB_URI.as_str()).await?;
     Migrator::up(&connection, None).await?;
 
     HttpServer::new(move || {
