@@ -9,7 +9,9 @@ use idgenerator::{IdGeneratorOptions, IdInstance};
 use lettre::{smtp::authentication::Credentials, SmtpClient, Transport};
 use lettre_email::EmailBuilder;
 use regex::Regex;
-use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
+use sea_orm::{
+    ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter, TransactionTrait,
+};
 use serde::{Deserialize, Serialize};
 use tracing::info;
 
@@ -113,7 +115,7 @@ pub(crate) async fn download_certs(
 
     // Check if the email has already been used
     if user::Entity::find()
-        .filter(user::Column::Email.eq(claims.signup_email))
+        .filter(user::Column::Email.eq(claims.signup_email.clone()))
         .one(conn.as_ref())
         .await
         .map_err(ise!("DCFO"))?
@@ -126,15 +128,43 @@ pub(crate) async fn download_certs(
     let password = utils::get_password_from_id(&claims.user_id);
 
     // Generate certificates
-    let cert = cert_utils::create_client_cert("COMP6443-unnamed".to_string(), claims.user_id)
-        .map_err(ise!("DCCCC"))?;
+    let cert =
+        cert_utils::create_client_cert("COMP6443-unnamed".to_string(), claims.user_id.clone())
+            .map_err(ise!("DCCCC"))?;
 
     // Sign certificates
     let ca_cert = cert_utils::get_ca_cert(&CA_CERT, &CA_KEY).map_err(ise!("DCGCC"))?;
     let client_pfx = cert_utils::generate_pfx(&cert, &ca_cert, "6443-certificates", &password)
         .map_err(ise!("DCGPX"))?;
 
+    let txn = conn.begin().await.map_err(ise!("DCBTX"))?;
+    let uid = claims
+        .user_id
+        .strip_prefix("_scpU")
+        .unwrap()
+        .strip_suffix("@unsw.scp.platform")
+        .unwrap()
+        .to_string();
+
     // Update database
+    let user = entity::user::ActiveModel {
+        email: sea_orm::ActiveValue::Set(claims.signup_email),
+        user_id: sea_orm::ActiveValue::Set(uid.clone()),
+        ..Default::default()
+    };
+
+    user.insert(&txn).await.map_err(ise!("DCIUM"))?;
+    // Add student role by default
+    let role = entity::role::ActiveModel {
+        name: sea_orm::ActiveValue::Set("student".to_string()),
+        user_id: sea_orm::ActiveValue::Set(uid.clone()),
+        ..Default::default()
+    };
+
+    role.insert(&txn).await.map_err(ise!("DCIRR"))?;
+
+    // Commit transaction
+    txn.commit().await.map_err(ise!("DCCTX"))?;
 
     // Send cert to client
     Ok(HttpResponse::Ok()
