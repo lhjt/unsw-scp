@@ -8,28 +8,7 @@ use sea_orm::DatabaseConnection;
 
 use crate::utils::{self, get_token_id, ise};
 
-#[get("/selfserve/id")]
-pub(crate) async fn ss_get_id(req: HttpRequest) -> Result<HttpResponse, Error> {
-    let id = get_token_id(&req)?;
-
-    Ok(HttpResponse::Ok().body(id))
-}
-
-#[get("/selfserve/roles")]
-pub(crate) async fn ss_get_roles(
-    req: HttpRequest,
-    conn: web::Data<DatabaseConnection>,
-) -> Result<HttpResponse, Error> {
-    // Get user id from email
-    let id = get_token_id(&req)?;
-
-    // Get roles for id
-    let roles: HashSet<String> = utils::get_roles(&id, conn.into_inner().as_ref())
-        .await
-        .map_err(ise!("GR"))?;
-
-    Ok(HttpResponse::Ok().json(roles))
-}
+pub mod self_service;
 
 #[get("/user/{id}/roles")]
 pub(crate) async fn get_user_roles(
