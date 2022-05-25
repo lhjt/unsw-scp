@@ -5,6 +5,8 @@ use actix_web::{
 use entity::role;
 use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
 
+use crate::JWT_PEM;
+
 #[get("/roles")]
 pub(crate) async fn get_roles(
     req: HttpRequest,
@@ -19,11 +21,8 @@ pub(crate) async fn get_roles(
         .map_err(ErrorInternalServerError)?;
 
     // Validate str
-    let claims = intra_jwt::verify_jwt(
-        jwt_str,
-        &std::fs::read_to_string("../../proxy/certs/jwt-key.pem").unwrap(),
-    )
-    .map_err(|_| ErrorBadRequest("Invalid authentication token"))?;
+    let claims = intra_jwt::verify_jwt(jwt_str, &JWT_PEM)
+        .map_err(|_| ErrorBadRequest("Invalid authentication token"))?;
 
     let email = claims.user_id;
 

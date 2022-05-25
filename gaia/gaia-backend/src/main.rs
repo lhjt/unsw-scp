@@ -1,9 +1,18 @@
+use std::env;
+
 use actix_web::{web::Data, App, HttpServer};
 use anyhow::Context;
 use migration::{Migrator, MigratorTrait};
+use once_cell::sync::Lazy;
 use routes::get_roles;
 
 mod routes;
+
+static JWT_PEM: Lazy<String> = once_cell::sync::Lazy::new(|| match env::var("JWT_PEM_LOC") {
+    Ok(v) => std::fs::read_to_string(v).unwrap_or_else(|_| panic!("JET PEM missing")),
+    Err(_) => std::fs::read_to_string("../../proxy/certs/jwt-key.pem")
+        .unwrap_or_else(|_| panic!("JET PEM missing")),
+});
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
