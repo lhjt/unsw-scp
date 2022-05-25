@@ -87,7 +87,10 @@ where
             // There is no client cert available
             // Display a warning and a link to collect the certs
             None => {
-                if request.connection_info().host() != "" && request.path() != "/login" {
+                if request.connection_info().host() != ""
+                    && (request.path() != "/login"
+                        && !request.path().starts_with("/api/certificates"))
+                {
                     // Redirect
                     let (request, _pl) = request.into_parts();
 
