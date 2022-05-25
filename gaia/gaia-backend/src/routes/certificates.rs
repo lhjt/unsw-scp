@@ -1,18 +1,20 @@
-use std::time::{Duration, UNIX_EPOCH};
-
 use actix_web::{
     error::{ErrorBadRequest, ErrorInternalServerError},
-    post, web, Error, HttpRequest, HttpResponse,
+    post, web, Error, HttpResponse,
 };
 use entity::user;
 use idgenerator::{IdGeneratorOptions, IdInstance};
+use lettre::{smtp::authentication::Credentials, SmtpClient, Transport};
+use lettre_email::EmailBuilder;
 use regex::Regex;
 use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
 use serde::{Deserialize, Serialize};
+use sha2::{Digest, Sha256};
+use tracing::info;
 
 use crate::{
     utils::{self, ise},
-    PUBLIC_ADDR,
+    FROM_ADDR, PUBLIC_ADDR, SMTP_ADDR, SMTP_PASSWORD, SMTP_USERNAME,
 };
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -23,7 +25,6 @@ pub(crate) struct UserEnrollmentPayload {
 
 #[post("/enrol")]
 pub(crate) async fn enrol_user(
-    req: HttpRequest,
     conn: web::Data<DatabaseConnection>,
     data: web::Json<UserEnrollmentPayload>,
 ) -> Result<HttpResponse, Error> {
@@ -65,7 +66,31 @@ pub(crate) async fn enrol_user(
         token
     );
 
-    // Send the email
+    // Generate the password
+    let hash_result = crate::utils::get_password_from_id(id);
 
-    todo!()
+    // Send the email
+    let email = EmailBuilder::new()
+        .to(data.email.clone())
+        .from((FROM_ADDR.to_string(), "Security Challenges Platform"))
+        .subject("COMP6443 Client Certificates").text(format!(r#"
+Attached is your client certificate for COMP6443 at UNSW. You will have to download this pfx archive and import it into your keychain.
+
+Your link to download the archive is here: {}
+
+It is valid for 30 minutes. The password to install the pfx archive is {}. Do not share these certificates with anyone else, as they will be able to access your account.
+        "#, link, hash_result)).build().map_err(ise!("EUBE"))?;
+
+    let mut mailer = SmtpClient::new_simple(SMTP_ADDR.as_str())
+        .map_err(ise!("EUCM"))?
+        .credentials(Credentials::new(
+            SMTP_USERNAME.as_str().to_owned(),
+            SMTP_PASSWORD.as_str().to_owned(),
+        ))
+        .transport();
+
+    let r = mailer.send(email.into()).map_err(ise!("EUSE"))?;
+    info!("send email response = {:#?}", r);
+
+    Ok(HttpResponse::Ok().finish())
 }

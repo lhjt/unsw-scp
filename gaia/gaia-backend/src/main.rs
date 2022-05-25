@@ -22,6 +22,11 @@ static JWT_PEM: Lazy<String> = once_cell::sync::Lazy::new(|| match env::var("JWT
 static DB_URI: Lazy<String> = env_util::lazy_env!("DB_URI", "sqlite://./db.db");
 static PUBLIC_ADDR: Lazy<String> = env_util::lazy_env!("PUBLIC_ADDR", "login.local.host:8443");
 
+static FROM_ADDR: Lazy<String> = env_util::lazy_env!("FROM_ADDR", "noreply@local.host");
+env_util::panic_env!(SMTP_ADDR);
+env_util::panic_env!(SMTP_USERNAME);
+env_util::panic_env!(SMTP_PASSWORD);
+
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     if std::env::var("RUST_LOG").is_err() {

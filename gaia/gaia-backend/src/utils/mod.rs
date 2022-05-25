@@ -7,6 +7,7 @@ use actix_web::{
 use entity::{role, user};
 use intra_jwt::ClaimsData;
 use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter, Set, TransactionTrait};
+use sha2::{Digest, Sha256};
 
 use crate::JWT_PEM;
 pub mod tokens;
@@ -103,4 +104,11 @@ pub(crate) async fn set_roles(
     txn.commit().await.map_err(ise!("SRCTX"))?;
 
     Ok(true)
+}
+
+/// Creates a password based on a user ID.
+pub(crate) fn get_password_from_id(id: i64) -> String {
+    let mut hasher = Sha256::new();
+    hasher.update(id.to_string().as_bytes());
+    format!("{:X}", hasher.finalize())
 }
