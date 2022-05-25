@@ -9,6 +9,7 @@ use intra_jwt::ClaimsData;
 use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter, Set, TransactionTrait};
 
 use crate::JWT_PEM;
+pub mod tokens;
 
 /// Macro to quickly construct an internal server error with an error code.
 macro_rules! ise {

@@ -20,6 +20,7 @@ static JWT_PEM: Lazy<String> = once_cell::sync::Lazy::new(|| match env::var("JWT
 });
 
 static DB_URI: Lazy<String> = env_util::lazy_env!("DB_URI", "sqlite://./db.db");
+static PUBLIC_ADDR: Lazy<String> = env_util::lazy_env!("PUBLIC_ADDR", "login.local.host:8443");
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {

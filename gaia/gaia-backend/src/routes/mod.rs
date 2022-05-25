@@ -10,6 +10,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::utils::{self, get_token_id, ise};
 
+pub mod certificates;
 pub mod self_service;
 
 #[get("/user/{id}/roles")]

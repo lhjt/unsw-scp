@@ -26,6 +26,7 @@ services:
     environment:
       - "DB_URI=sqlite:///data/db.db"
       - "JWT_PEM_LOC=/certs/jwt-key.pem"
+      - "PASETO_KEY=12345679801234567980123456798012"
     volumes:
       - ./data/gaia-backend:/data
       - ./data/certs:/certs
