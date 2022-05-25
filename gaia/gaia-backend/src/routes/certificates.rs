@@ -75,7 +75,7 @@ pub(crate) async fn enrol_user(
     // Send the email
     let email = EmailBuilder::new()
         .to(data.email.clone())
-        .from((FROM_ADDR.to_string(), "Security Challenges Platform"))
+        .from((FROM_ADDR.to_string(), "UNSW Security Challenges Platform"))
         .subject("COMP6443 Client Certificates").text(format!(r#"
 Attached is your client certificate for COMP6443 at UNSW. You will have to download this certificate archive and import it into your keychain.
 
