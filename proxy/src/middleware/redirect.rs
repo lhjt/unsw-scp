@@ -88,7 +88,8 @@ where
             // Display a warning and a link to collect the certs
             None => {
                 if request.connection_info().host() != ""
-                    && (request.path() != "/login"
+                    && (request.path() != "/enrol"
+                        && !request.path().starts_with("/_next")
                         && !request.path().starts_with("/api/certificates"))
                 {
                     // Redirect
@@ -97,7 +98,7 @@ where
                     let response = HttpResponse::Found()
                         .insert_header((
                             http::header::LOCATION,
-                            format!("https://{}/login", DOMAIN),
+                            format!("https://{}/enrol", DOMAIN),
                         ))
                         .finish()
                         // constructed responses map to "right" body

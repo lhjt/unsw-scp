@@ -15,12 +15,18 @@ pub(crate) async fn route_whoami(
 ) -> Result<HttpResponse, Error> {
     // Middleware should automatically redirect to login if there is no cert
     let mut new_url: Url;
-    if (req.path() == "/login" || req.path().starts_with("/api"))
+    if (req.path() == "/enrol"
+        || req.path().starts_with("/api")
+        || req.path().starts_with("/_next"))
         && req.conn_data::<Email>().is_none()
     {
         // return Ok(HttpResponse::Unauthorized().body("You are missing your certificate."));
         // Make a more elegant page
-        new_url = Url::parse("http://gaia-backend:8081").unwrap();
+        if req.path() == "/enrol" || req.path().starts_with("/_next") {
+            new_url = Url::parse("http://gaia-frontend:80").unwrap();
+        } else {
+            new_url = Url::parse("http://gaia-backend:8081").unwrap();
+        }
     } else {
         // TODO: grab the subdomain
         let domain = match req.uri().host() {
