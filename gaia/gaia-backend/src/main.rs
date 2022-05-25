@@ -47,7 +47,8 @@ async fn main() -> anyhow::Result<()> {
                     .service(routes::get_user_roles)
                     .service(routes::get_users)
                     .service(routes::self_service::get_roles)
-                    .service(routes::self_service::get_id),
+                    .service(routes::self_service::get_id)
+                    .service(web::scope("/certificates").service(routes::certificates::enrol_user)),
             )
     })
     .bind(("0.0.0.0", 8081))?
