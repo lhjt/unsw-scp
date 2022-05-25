@@ -34,9 +34,10 @@ async fn main() -> anyhow::Result<()> {
             .wrap(Logger::new("%a %{Host}i %r %s %t (%T)"))
             .service(
                 web::scope("/api")
-                    .service(routes::get_roles)
-                    .service(routes::set_roles)
-                    .service(routes::get_id),
+                    .service(routes::set_user_roles)
+                    .service(routes::get_user_roles)
+                    .service(routes::ss_get_roles)
+                    .service(routes::ss_get_id),
             )
     })
     .bind(("0.0.0.0", 8081))?
