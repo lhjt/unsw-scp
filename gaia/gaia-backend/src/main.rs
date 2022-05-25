@@ -1,10 +1,13 @@
 use std::env;
 
-use actix_web::{web::Data, App, HttpServer};
+use actix_web::{
+    middleware::Logger,
+    web::{self, Data},
+    App, HttpServer,
+};
 use anyhow::Context;
 use migration::{Migrator, MigratorTrait};
 use once_cell::sync::Lazy;
-use routes::{get_roles, set_roles};
 
 mod routes;
 mod utils;
@@ -28,8 +31,13 @@ async fn main() -> anyhow::Result<()> {
     HttpServer::new(move || {
         App::new()
             .app_data(Data::new(connection.clone()))
-            .service(get_roles)
-            .service(set_roles)
+            .wrap(Logger::new("%a %{Host}i %r %s %t (%T)"))
+            .service(
+                web::scope("/api")
+                    .service(routes::get_roles)
+                    .service(routes::set_roles)
+                    .service(routes::get_id),
+            )
     })
     .bind(("0.0.0.0", 8081))?
     .run()

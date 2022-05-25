@@ -8,7 +8,14 @@ use sea_orm::DatabaseConnection;
 
 use crate::utils::{self, get_token_id, ise};
 
-#[get("/roles")]
+#[get("/selfserve/id")]
+pub(crate) async fn get_id(req: HttpRequest) -> Result<HttpResponse, Error> {
+    let id = get_token_id(&req)?;
+
+    Ok(HttpResponse::Ok().body(id))
+}
+
+#[get("/selfserve/roles")]
 pub(crate) async fn get_roles(
     req: HttpRequest,
     conn: web::Data<DatabaseConnection>,
