@@ -107,8 +107,8 @@ pub(crate) async fn set_roles(
 }
 
 /// Creates a password based on a user ID.
-pub(crate) fn get_password_from_id(id: i64) -> String {
+pub(crate) fn get_password_from_id(id: &str) -> String {
     let mut hasher = Sha256::new();
-    hasher.update(id.to_string().as_bytes());
+    hasher.update(id.as_bytes());
     format!("{:X}", hasher.finalize())
 }

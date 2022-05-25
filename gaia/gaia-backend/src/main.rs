@@ -14,9 +14,21 @@ mod routes;
 mod utils;
 
 static JWT_PEM: Lazy<String> = once_cell::sync::Lazy::new(|| match env::var("JWT_PEM_LOC") {
-    Ok(v) => std::fs::read_to_string(v).unwrap_or_else(|_| panic!("JET PEM missing")),
+    Ok(v) => std::fs::read_to_string(v).unwrap_or_else(|_| panic!("JWT PEM missing")),
     Err(_) => std::fs::read_to_string("../../proxy/certs/jwt-key.pem")
-        .unwrap_or_else(|_| panic!("JET PEM missing")),
+        .unwrap_or_else(|_| panic!("JWT PEM missing")),
+});
+
+static CA_CERT: Lazy<String> = once_cell::sync::Lazy::new(|| match env::var("CA_CERT_LOC") {
+    Ok(v) => std::fs::read_to_string(v).unwrap_or_else(|_| panic!("CA_CERT PEM missing")),
+    Err(_) => std::fs::read_to_string("../../proxy/certs/rootCA.pem")
+        .unwrap_or_else(|_| panic!("CA_CERT PEM missing")),
+});
+
+static CA_KEY: Lazy<String> = once_cell::sync::Lazy::new(|| match env::var("CA_KEY_LOC") {
+    Ok(v) => std::fs::read_to_string(v).unwrap_or_else(|_| panic!("CA_KEY PEM missing")),
+    Err(_) => std::fs::read_to_string("../../proxy/certs/rootCA-key.pem")
+        .unwrap_or_else(|_| panic!("CA_KEY PEM missing")),
 });
 
 static DB_URI: Lazy<String> = env_util::lazy_env!("DB_URI", "sqlite://./db.db");
@@ -48,7 +60,11 @@ async fn main() -> anyhow::Result<()> {
                     .service(routes::get_users)
                     .service(routes::self_service::get_roles)
                     .service(routes::self_service::get_id)
-                    .service(web::scope("/certificates").service(routes::certificates::enrol_user)),
+                    .service(
+                        web::scope("/certificates")
+                            .service(routes::certificates::enrol_user)
+                            .service(routes::certificates::download_certs),
+                    ),
             )
     })
     .bind(("0.0.0.0", 8081))?

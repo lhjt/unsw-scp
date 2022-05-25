@@ -1,5 +1,7 @@
 use actix_web::{
     error::{ErrorBadRequest, ErrorInternalServerError},
+    get,
+    http::header::{self, ContentType, DispositionParam},
     post, web, Error, HttpResponse,
 };
 use entity::user;
@@ -9,12 +11,11 @@ use lettre_email::EmailBuilder;
 use regex::Regex;
 use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
 use serde::{Deserialize, Serialize};
-use sha2::{Digest, Sha256};
 use tracing::info;
 
 use crate::{
     utils::{self, ise},
-    FROM_ADDR, PUBLIC_ADDR, SMTP_ADDR, SMTP_PASSWORD, SMTP_USERNAME,
+    CA_CERT, CA_KEY, FROM_ADDR, PUBLIC_ADDR, SMTP_ADDR, SMTP_PASSWORD, SMTP_USERNAME,
 };
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -67,7 +68,7 @@ pub(crate) async fn enrol_user(
     );
 
     // Generate the password
-    let hash_result = crate::utils::get_password_from_id(id);
+    let hash_result = crate::utils::get_password_from_id(&format!("_scpU{}@unsw.scp.platform", id));
 
     // Send the email
     let email = EmailBuilder::new()
@@ -93,4 +94,54 @@ It is valid for 30 minutes. The password to install the pfx archive is {}. Do no
     info!("send email response = {:#?}", r);
 
     Ok(HttpResponse::Ok().finish())
+}
+
+#[derive(Debug, Deserialize)]
+pub(crate) struct DownloadTokenQueryParams {
+    pub key: String,
+}
+
+#[get("/download")]
+pub(crate) async fn download_certs(
+    conn: web::Data<DatabaseConnection>,
+    query_params: web::Query<DownloadTokenQueryParams>,
+) -> Result<HttpResponse, Error> {
+    // Extract and validate token claims
+    let claims = utils::tokens::decrypt_download_token(&query_params.key).ok_or_else(|| {
+        ErrorBadRequest("Invalid download token. Please request your certificates again.")
+    })?;
+
+    // Check if the email has already been used
+    if user::Entity::find()
+        .filter(user::Column::Email.eq(claims.signup_email))
+        .one(conn.as_ref())
+        .await
+        .map_err(ise!("DCFO"))?
+        .is_some()
+    {
+        return Err(ErrorBadRequest("This email has already downloaded their relevant tokens. Please contact an administrator if this is an error."));
+    }
+
+    // Generate password
+    let password = utils::get_password_from_id(&claims.user_id);
+
+    // Generate certificates
+    let cert = cert_utils::create_client_cert("COMP6443-unnamed".to_string(), claims.user_id)
+        .map_err(ise!("DCCCC"))?;
+
+    // Sign certificates
+    let ca_cert = cert_utils::get_ca_cert(&CA_CERT, &CA_KEY).map_err(ise!("DCGCC"))?;
+    let client_pfx = cert_utils::generate_pfx(&cert, &ca_cert, "6443-certificates", &password)
+        .map_err(ise!("DCGPX"))?;
+
+    // Update database
+
+    // Send cert to client
+    Ok(HttpResponse::Ok()
+        .content_type(ContentType::octet_stream())
+        .insert_header(header::ContentDisposition {
+            disposition: header::DispositionType::Attachment,
+            parameters: vec![DispositionParam::Filename("certificates.pfx".to_string())],
+        })
+        .body(client_pfx))
 }

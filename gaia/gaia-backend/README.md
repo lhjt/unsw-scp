@@ -14,3 +14,5 @@
 | `SMTP_ADDR`     | The address of the SMTP server to use to send emails.          | ``                              |
 | `SMTP_USERNAME` | The username to use with the SMTP server.                      | ``                              |
 | `SMTP_PASSWORD` | The password to use with the SMTP server.                      | ``                              |
+| `CA_CERT_LOC`   | The location to the CA root certificate pem.                   | ``                              |
+| `CA_KEY_LOC`    | THe location of the CA root certificate key pem.               | ``                              |
