@@ -16,6 +16,7 @@ pub(crate) async fn route_whoami(
     // Middleware should automatically redirect to login if there is no cert
     let mut new_url: Url;
     if req.path() == "/login" && req.conn_data::<Email>().is_none() {
+        return Ok(HttpResponse::Unauthorized().body("You are missing your certificate."));
         // Make a more elegant page
         new_url = Url::parse("http://gaia.svc.cluster.local").unwrap();
     } else {
@@ -24,6 +25,7 @@ pub(crate) async fn route_whoami(
             Some(s) => s,
             None => {
                 // This should not be possible
+                eprintln!("req.uri() = {:#?}", req.uri());
                 return Ok(HttpResponse::InternalServerError().body("Internal server error: EC.SM"));
             },
         };
@@ -35,7 +37,7 @@ pub(crate) async fn route_whoami(
                 Some(s) => {
                     // TODO: Check with the service registry to see if this should be proxied
                     // somewhere Return placeholder for the time being
-                    new_url = Url::parse("http://placeholder.challenge.svc.cluster.local").unwrap();
+                    new_url = Url::parse("http://localhost:8081/roles").unwrap();
                 },
                 None => {
                     // TODO: Show the dashboard

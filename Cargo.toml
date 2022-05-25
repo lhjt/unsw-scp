@@ -1,0 +1,9 @@
+[workspace]
+members = [
+    "proxy",
+    "intra-jwt",
+    "certman",
+    "gaia/gaia-backend",
+    "gaia/gaia-backend/migration",
+    "gaia/gaia-backend/entity",
+]

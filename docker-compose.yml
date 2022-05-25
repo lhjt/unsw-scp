@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  proxy:
+    build:
+      context: .
+      dockerfile: proxy/Dockerfile
+    image: ct2-proxy
+    ports:
+      - "8443:8443"
+      - "8080:8080"
+    environment:
+      - JWT_PEM=/certs/jwt-key.pem
+    volumes:
+      - ./data/certs:/certs
+  gaia-backend:
+    build:
+      context: .
+      dockerfile: gaia/gaia-backend/Dockerfile
+    image: ct2-gaia-backend
+    ports:
+      - "8081:8081"
