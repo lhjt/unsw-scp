@@ -1,14 +1,23 @@
 use std::collections::HashSet;
 
 use actix_web::{
-    error::{ErrorBadRequest, ErrorInternalServerError, ErrorUnauthorized},
+    error::{ErrorBadRequest, ErrorInternalServerError, ErrorNotFound, ErrorUnauthorized},
     Error, HttpRequest,
 };
-use entity::role;
+use entity::{role, user};
 use intra_jwt::ClaimsData;
-use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
+use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter, Set, TransactionTrait};
 
 use crate::JWT_PEM;
+
+/// Macro to quickly construct an internal server error with an error code.
+macro_rules! ise {
+    ($code:expr) => {
+        |_| ErrorInternalServerError(concat!("Internal server error: EC.", $code))
+    };
+}
+
+pub(crate) use ise;
 
 /// Fetch the auth claims from a http request's token.
 pub(crate) fn get_auth_claims(req: &HttpRequest) -> Result<ClaimsData, Error> {
@@ -55,4 +64,42 @@ pub(crate) async fn get_roles(
         .iter()
         .map(|r| r.name.to_owned())
         .collect())
+}
+
+/// Set the roles for a user.
+pub(crate) async fn set_roles(
+    id: &str,
+    roles: Vec<String>,
+    conn: &DatabaseConnection,
+) -> anyhow::Result<bool, Error> {
+    user::Entity::find()
+        .filter(user::Column::UserId.eq(id))
+        .one(conn)
+        .await
+        .map_err(ise!("SRDBQ"))?
+        .ok_or_else(|| ErrorNotFound(format!("The user with id {} does not exist", id)))?;
+
+    let txn = conn.begin().await.map_err(ise!("SRBTXN"))?;
+
+    // Remove all previous roles
+    role::Entity::delete_many()
+        .filter(role::Column::UserId.eq(id))
+        .exec(&txn)
+        .await
+        .map_err(ise!("SRDM"))?;
+
+    // Insert new roles for this user
+    role::Entity::insert_many(roles.into_iter().map(|r| role::ActiveModel {
+        name: Set(r),
+        user_id: Set((*id).to_string()),
+        ..Default::default()
+    }))
+    .exec(&txn)
+    .await
+    .map_err(ise!("SRIM"))?;
+
+    // Commit transaction
+    txn.commit().await.map_err(ise!("SRCTX"))?;
+
+    Ok(true)
 }
