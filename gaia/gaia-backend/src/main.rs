@@ -7,6 +7,7 @@ use once_cell::sync::Lazy;
 use routes::get_roles;
 
 mod routes;
+mod utils;
 
 static JWT_PEM: Lazy<String> = once_cell::sync::Lazy::new(|| match env::var("JWT_PEM_LOC") {
     Ok(v) => std::fs::read_to_string(v).unwrap_or_else(|_| panic!("JET PEM missing")),
