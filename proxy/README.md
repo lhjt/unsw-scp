@@ -41,8 +41,11 @@ The actual keyfile that is provided to the proxy and other services should be en
 
 ### Environment Variables
 
-| Name           | Description                                                            | Default             |
-| -------------- | ---------------------------------------------------------------------- | ------------------- |
-| `BASE_DOMAIN`  | The public-facing base domain on which the proxy will be reachable at. | `local.host`        |
-| `REGISTRY_URL` | The URL where the service registry provider is available at.           | `registry`          |
-| `JWT_PEM`      | The location of the PEM key used to sign JWT tokens.                   | `certs/jwt-key.pem` |
+| Name           | Description                                                                  | Default                 |
+| -------------- | ---------------------------------------------------------------------------- | ----------------------- |
+| `BASE_DOMAIN`  | The public-facing base domain on which the proxy will be reachable at.       | `local.host`            |
+| `REGISTRY_URL` | The URL where the service registry provider is available at.                 | `registry`              |
+| `JWT_PEM`      | The location of the PEM key used to sign JWT tokens.                         | `certs/jwt-key.pem`     |
+| `CA_CERT`      | The location of the CA certificate that is used to sign client certificates. | `certs/rootCA.pem`      |
+| `SERVER_CERT`  | The location of the server certificate for serving TLS traffic.              | `certs/server-cert.pem` |
+| `SERVER_KEY`   | The location of the server key for serving TLS traffic.                      | `certs/server-key.pem`  |

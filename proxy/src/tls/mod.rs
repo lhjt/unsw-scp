@@ -2,14 +2,13 @@ use std::{borrow::Cow, fs::File, io::BufReader, vec};
 
 use once_cell::sync::OnceCell;
 use rustls::{
-    server::AllowAnyAnonymousOrAuthenticatedClient,
-    Certificate,
-    PrivateKey,
-    RootCertStore,
+    server::AllowAnyAnonymousOrAuthenticatedClient, Certificate, PrivateKey, RootCertStore,
     ServerConfig,
 };
 use tracing::{debug, instrument, warn};
 use x509_parser::extensions::GeneralName;
+
+use crate::{CA_CERT, SERVER_CERT, SERVER_KEY};
 
 pub static EDDSA_KEY_PEM: OnceCell<Cow<str>> = OnceCell::new();
 
@@ -61,14 +60,10 @@ pub fn get_emails_from_cert(certificate_data: &[u8]) -> Vec<Cow<str>> {
         .collect()
 }
 
-const CA_CERT: &str = "certs/rootCA.pem";
-const SERVER_CERT: &str = "certs/server-cert.pem";
-const SERVER_KEY: &str = "certs/server-key.pem";
-
 /// Create the configuration for the TLS server.
 pub fn create_tls_server_config() -> Result<ServerConfig, std::io::Error> {
     let mut cert_store = RootCertStore::empty();
-    let ca_cert = &mut BufReader::new(File::open(CA_CERT)?);
+    let ca_cert = &mut BufReader::new(File::open(CA_CERT.as_str())?);
     let ca_cert = Certificate(rustls_pemfile::certs(ca_cert).unwrap()[0].clone());
     cert_store
         .add(&ca_cert)
@@ -77,8 +72,8 @@ pub fn create_tls_server_config() -> Result<ServerConfig, std::io::Error> {
     let config = ServerConfig::builder()
         .with_safe_defaults()
         .with_client_cert_verifier(client_auth);
-    let cert_file = &mut BufReader::new(File::open(SERVER_CERT)?);
-    let key_file = &mut BufReader::new(File::open(SERVER_KEY)?);
+    let cert_file = &mut BufReader::new(File::open(SERVER_CERT.as_str())?);
+    let key_file = &mut BufReader::new(File::open(SERVER_KEY.as_str())?);
     let cert_chain = rustls_pemfile::certs(cert_file)
         .unwrap()
         .into_iter()
