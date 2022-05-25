@@ -49,6 +49,8 @@ pub(crate) fn get_token_id(req: &HttpRequest) -> Result<String, Error> {
         .ok_or_else(|| ErrorBadRequest("Invalid authentication token"))?
         .strip_prefix("_scpU")
         .ok_or_else(|| ErrorBadRequest("Invalid authentication token"))?
+        .strip_suffix("@unsw.scp.platform")
+        .ok_or_else(|| ErrorBadRequest("Invalid authentication token"))?
         .to_owned();
 
     Ok(id)
