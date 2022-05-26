@@ -9,6 +9,8 @@ use serde::{Deserialize, Serialize};
 
 use crate::registry::{self, EvaluationErrors};
 
+pub mod create_service;
+
 #[derive(Debug, Clone, Deserialize)]
 pub(crate) struct EvaluateRequestPayload {
     /// The uri of the request that needs to be routed.

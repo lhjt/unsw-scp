@@ -5,6 +5,8 @@ use tracing::error;
 
 use crate::gaia_utils;
 
+pub mod services;
+
 #[derive(Debug, Clone, Error)]
 pub(crate) enum EvaluationErrors {
     #[error("The user does not have permission to access the service.")]

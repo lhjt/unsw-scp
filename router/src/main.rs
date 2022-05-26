@@ -24,9 +24,11 @@ async fn main() -> anyhow::Result<()> {
     Migrator::up(&connection, None).await?;
 
     Ok(HttpServer::new(move || {
-        App::new()
-            .app_data(Data::new(connection.clone()))
-            .service(web::scope("/api").service(routes::evaluate))
+        App::new().app_data(Data::new(connection.clone())).service(
+            web::scope("/api")
+                .service(routes::evaluate)
+                .service(routes::create_service::create_service),
+        )
     })
     .bind(("0.0.0.0", 8082))?
     .run()
