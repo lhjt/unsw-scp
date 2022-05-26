@@ -148,6 +148,25 @@ pub(crate) async fn create_service(
             .map_err(ise!("CSINC"))?;
     }
 
+    // Ensure that all internal hostnames are unique
+    let internal_names: HashSet<String> = payload
+        .services
+        .iter()
+        .map(|s| format!("{}.challenges.svc.cluster.local", s.name))
+        .collect();
+    if !service::Entity::find()
+        .filter(service::Column::InternalHostname.is_in(internal_names.clone()))
+        .all(&txn)
+        .await
+        .map_err(ise!("CSQSI"))?
+        .is_empty()
+    {
+        return Err(ErrorBadRequest(format!(
+            "Cannot create a service with a name that already exists: {:?}",
+            internal_names
+        )));
+    }
+
     // Insert new services into the database
     let new_services = payload
         .services
