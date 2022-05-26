@@ -14,7 +14,7 @@ use url::Url;
 use crate::{
     middleware::Email,
     router_utils::{self, EvaluationErrors},
-    BASE_DOMAIN,
+    BASE_DOMAIN, ROUTER_URL,
 };
 
 /// Macro to quickly construct an internal server error with an error code.
@@ -83,8 +83,12 @@ pub(crate) async fn route_whoami(
                     })?;
                 },
                 None => {
-                    // TODO: Show the dashboard
-                    new_url = Url::parse("https://httpbin.org").unwrap();
+                    if req.path().starts_with("/api") {
+                        new_url = Url::parse(&format!("http://{}", ROUTER_URL.as_str())).unwrap();
+                    } else {
+                        // TODO: Show the dashboard
+                        new_url = Url::parse("https://httpbin.org").unwrap();
+                    }
                 },
             },
             Some(_) | None => {
