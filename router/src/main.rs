@@ -1,7 +1,13 @@
 use migration::{Migrator, MigratorTrait};
+use once_cell::sync::Lazy;
+use std::env;
 
+mod gaia_utils;
 mod registry;
 mod routes;
+
+static DB_URI: Lazy<String> = env_utils::lazy_env!("DB_URI", "sqlite://./db.db");
+static GAIA_ADDR: Lazy<String> = env_utils::lazy_env!("GAIA_ADDR", "http://gaia-backend:8081");
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -10,7 +16,7 @@ async fn main() -> anyhow::Result<()> {
     }
     tracing_subscriber::fmt::init();
 
-    let connection = sea_orm::Database::connect("sqlite://./db.db").await?;
+    let connection = sea_orm::Database::connect(DB_URI.as_str()).await?;
     Migrator::up(&connection, None).await?;
 
     Ok(())
