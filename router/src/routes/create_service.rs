@@ -167,45 +167,47 @@ pub(crate) async fn create_service(
         .await
         .map_err(ise!("CSINS"))?;
 
-    // Ensure that there are no records in the database that have the same flag id
-    let new_flag_ids: HashSet<String> = payload.flags.iter().map(|f| f.id.clone()).collect();
-    let duplicate_flags = flag::Entity::find()
-        .filter(flag::Column::Id.is_in(new_flag_ids))
-        .all(&txn)
-        .await
-        .map_err(ise!("CSQAF"))?;
-    if !duplicate_flags.is_empty() {
-        return Err(ErrorBadRequest(format!(
-            "Attempted to insert duplicate flags into the database: {:?}",
-            duplicate_flags
-                .into_iter()
-                .map(|f| f.id)
-                .collect::<Vec<String>>()
-        )));
+    if !payload.flags.is_empty() {
+        // Ensure that there are no records in the database that have the same flag id
+        let new_flag_ids: HashSet<String> = payload.flags.iter().map(|f| f.id.clone()).collect();
+        let duplicate_flags = flag::Entity::find()
+            .filter(flag::Column::Id.is_in(new_flag_ids))
+            .all(&txn)
+            .await
+            .map_err(ise!("CSQAF"))?;
+        if !duplicate_flags.is_empty() {
+            return Err(ErrorBadRequest(format!(
+                "Attempted to insert duplicate flags into the database: {:?}",
+                duplicate_flags
+                    .into_iter()
+                    .map(|f| f.id)
+                    .collect::<Vec<String>>()
+            )));
+        }
+
+        // Insert new flags into the database
+        let new_flags = payload
+            .flags
+            .iter()
+            .map(|f| flag::ActiveModel {
+                category_id: Set(*category_name_id_map.get(&f.category).unwrap()),
+                challenge_id: Set(new_challenge_id),
+                flag: Set(f.flag.clone()),
+                flag_type: Set(match f.category.as_str() {
+                    "static" => flag::FlagType::Static,
+                    "dynamic" => flag::FlagType::Dynamic,
+                    _ => unreachable!(),
+                }),
+                id: Set(f.id.clone()),
+                points: Set(f.points),
+            })
+            .collect::<Vec<flag::ActiveModel>>();
+
+        flag::Entity::insert_many(new_flags)
+            .exec(&txn)
+            .await
+            .map_err(ise!("CSINF"))?;
     }
-
-    // Insert new flags into the database
-    let new_flags = payload
-        .flags
-        .iter()
-        .map(|f| flag::ActiveModel {
-            category_id: Set(*category_name_id_map.get(&f.category).unwrap()),
-            challenge_id: Set(new_challenge_id),
-            flag: Set(f.flag.clone()),
-            flag_type: Set(match f.category.as_str() {
-                "static" => flag::FlagType::Static,
-                "dynamic" => flag::FlagType::Dynamic,
-                _ => unreachable!(),
-            }),
-            id: Set(f.id.clone()),
-            points: Set(f.points),
-        })
-        .collect::<Vec<flag::ActiveModel>>();
-
-    flag::Entity::insert_many(new_flags)
-        .exec(&txn)
-        .await
-        .map_err(ise!("CSINF"))?;
 
     // Commit transaction
     txn.commit().await.map_err(ise!("CSCFT"))?;
