@@ -71,7 +71,7 @@ pub(crate) async fn enrol_user(
 
     // Generate the download link
     let generator_options = IdGeneratorOptions::new().worker_id(1).worker_id_bit_len(6);
-    let _ = IdInstance::init(generator_options).map_err(ise!("CIG"))?;
+    IdInstance::init(generator_options).map_err(ise!("CIG"))?;
     let id = IdInstance::next_id();
     let token = utils::tokens::create_download_token(
         &format!("_scpU{}@unsw.scp.platform", id),

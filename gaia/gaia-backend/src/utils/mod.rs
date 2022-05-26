@@ -64,7 +64,7 @@ pub(crate) async fn get_roles(
         .all(conn)
         .await?
         .iter()
-        .map(|r| r.name.to_owned())
+        .map(|r| r.name.clone())
         .collect())
 }
 

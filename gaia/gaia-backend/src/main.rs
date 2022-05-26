@@ -1,3 +1,7 @@
+#![warn(clippy::pedantic)]
+#![allow(clippy::default_trait_access)]
+#![allow(clippy::unused_async)]
+
 use std::env;
 
 use actix_web::{
