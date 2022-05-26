@@ -50,7 +50,7 @@ async fn main() -> anyhow::Result<()> {
                 .service(routes::evaluation::evaluate)
                 .service(routes::create_service::create_service)
                 .service(web::scope("/flags").service(routes::flags::generate_flag))
-                .service(web::scope("/challenges").service(routes::challenges::get_all_challenges)),
+                .service(web::scope("/challenges").service(routes::challenges::get_all)),
         )
     })
     .bind(("0.0.0.0", 8082))?

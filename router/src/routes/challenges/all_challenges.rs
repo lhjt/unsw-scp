@@ -39,7 +39,7 @@ struct ReturnService {
 }
 
 #[get("")]
-pub(crate) async fn get_all_challenges(
+pub(crate) async fn get_all(
     req: HttpRequest,
     conn: web::Data<DatabaseConnection>,
 ) -> Result<HttpResponse, Error> {
