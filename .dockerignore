@@ -13,3 +13,6 @@
 # Certificates
 certs/
 .git/
+
+**/node_modules/
+**/.next/
