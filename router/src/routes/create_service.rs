@@ -214,10 +214,10 @@ pub(crate) async fn create_service(
                 category_id: Set(*category_name_id_map.get(&f.category).unwrap()),
                 challenge_id: Set(new_challenge_id),
                 flag: Set(f.flag.clone()),
-                flag_type: Set(match f.category.as_str() {
+                flag_type: Set(match f.flag_type.as_str() {
                     "static" => flag::FlagType::Static,
                     "dynamic" => flag::FlagType::Dynamic,
-                    _ => unreachable!(),
+                    v => unreachable!("got: {}", v),
                 }),
                 id: Set(f.id.clone()),
                 points: Set(f.points),
