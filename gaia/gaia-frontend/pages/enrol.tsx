@@ -16,6 +16,10 @@ export default function Page() {
         <>
             <Head>
                 <title>UNSW SCP (COMP6443) - Enrolment</title>
+                <meta
+                    name="description"
+                    content="Enrol in the UNSW Security Challenges Platform for COMP6443"
+                />
             </Head>
             <CentreLayout>
                 <Card width="min(600px, 90%)">
