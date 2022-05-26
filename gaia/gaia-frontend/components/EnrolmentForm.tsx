@@ -22,7 +22,7 @@ const EnrolmentButton: FunctionComponent<EnrolmentButtonProps> = () => {
 
     const isValid = () => {
         if (radioValue === "1") {
-            const regex = /^z\d{7}$/gm;
+            const regex = /^z\d{6,7}$/gm;
             return regex.test(zidValue);
         } else {
             const regex = /^.+@cba\.com\.au$/gm;
