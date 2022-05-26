@@ -1,3 +1,4 @@
+use actix_web::{web, App, HttpServer};
 use migration::{Migrator, MigratorTrait};
 use once_cell::sync::Lazy;
 use std::env;
@@ -19,5 +20,10 @@ async fn main() -> anyhow::Result<()> {
     let connection = sea_orm::Database::connect(DB_URI.as_str()).await?;
     Migrator::up(&connection, None).await?;
 
-    Ok(())
+    Ok(
+        HttpServer::new(|| App::new().service(web::scope("/api").service(routes::evaluate)))
+            .bind(("0.0.0.0", 8082))?
+            .run()
+            .await?,
+    )
 }

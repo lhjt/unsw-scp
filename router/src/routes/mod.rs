@@ -1,5 +1,7 @@
 use actix_web::{
-    error::{ErrorBadRequest, ErrorForbidden, ErrorInternalServerError, ErrorNotFound},
+    error::{
+        ErrorBadRequest, ErrorForbidden, ErrorInternalServerError, ErrorNotFound, ErrorUnauthorized,
+    },
     post, web, Error, HttpRequest, HttpResponse,
 };
 use sea_orm::DatabaseConnection;
@@ -30,11 +32,10 @@ pub(crate) async fn evaluate(
     payload: web::Json<EvaluateRequestPayload>,
     conn: web::Data<DatabaseConnection>,
 ) -> Result<HttpResponse, Error> {
-    // Assumed safe with guards implemented
     let id = req
         .headers()
         .get("x-scp-auth")
-        .unwrap()
+        .ok_or_else(|| ErrorUnauthorized(""))?
         .to_str()
         .map_err(ErrorForbidden)?;
 
