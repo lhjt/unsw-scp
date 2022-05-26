@@ -1,11 +1,31 @@
 #![allow(clippy::unused_async)]
 
-use actix_web::{error, web, Error, HttpRequest, HttpResponse};
+use actix_web::{
+    error::{
+        self, ErrorBadRequest, ErrorForbidden, ErrorInternalServerError, ErrorNotFound,
+        ErrorUnauthorized,
+    },
+    web, Error, HttpRequest, HttpResponse,
+};
 use awc::Client;
 use tracing::instrument;
 use url::Url;
 
-use crate::{middleware::Email, BASE_DOMAIN};
+use crate::{
+    middleware::Email,
+    router_utils::{self, EvaluationErrors},
+    BASE_DOMAIN,
+};
+
+/// Macro to quickly construct an internal server error with an error code.
+macro_rules! ise {
+    ($code:expr) => {
+        |e| {
+            tracing::error!("exception occurred: {}", e);
+            ErrorInternalServerError(concat!("Internal server error: EC.", $code))
+        }
+    };
+}
 
 #[instrument(skip(payload, client))]
 pub(crate) async fn route_whoami(
@@ -43,9 +63,24 @@ pub(crate) async fn route_whoami(
         match subdomain.next() {
             Some("ctf") => match subdomain.next() {
                 Some(s) => {
-                    // TODO: Check with the service registry to see if this should be proxied
-                    // somewhere Return placeholder for the time being
-                    new_url = Url::parse("http://gaia-backend:8081/roles").unwrap();
+                    // Check with the service registry to see if this should be proxied
+                    new_url = router_utils::get_route(
+                        s,
+                        req.headers()
+                            .get("X-Scp-Auth")
+                            .ok_or_else(|| ErrorUnauthorized("Missing authentication header"))?
+                            .to_str()
+                            .map_err(ise!("RWPS"))?,
+                    )
+                    .await
+                    .map_err(|e| match e {
+                        EvaluationErrors::Forbidden => ErrorForbidden(""),
+                        EvaluationErrors::NotFound => ErrorNotFound(""),
+                        EvaluationErrors::InvalidUriError => ErrorBadRequest(""),
+                        EvaluationErrors::InternalError => {
+                            ErrorInternalServerError("Internal server error: RWGH")
+                        },
+                    })?;
                 },
                 None => {
                     // TODO: Show the dashboard

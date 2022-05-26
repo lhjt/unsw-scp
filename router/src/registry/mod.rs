@@ -1,7 +1,7 @@
 use router_entity::entities::service;
 use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
 use thiserror::Error;
-use tracing::error;
+use tracing::{error, warn};
 
 use crate::gaia_utils;
 
@@ -22,6 +22,7 @@ pub(crate) enum EvaluationErrors {
 }
 
 /// Determine which address a supplied URI should be proxied to.
+#[tracing::instrument]
 pub(crate) async fn evaluate_uri(
     uri: url::Url,
     token: &str,
@@ -31,9 +32,13 @@ pub(crate) async fn evaluate_uri(
         return Err(EvaluationErrors::InvalidUriError);
     }
 
-    let roles = gaia_utils::get_roles(token)
-        .await
-        .map_err(|_| EvaluationErrors::NoRoles)?;
+    let roles = gaia_utils::get_roles(token).await.map_err(|e| {
+        warn!(
+            "user has no roles or there was an error fetching them: {:?}",
+            e
+        );
+        EvaluationErrors::NoRoles
+    })?;
 
     // Attempt to find a service with the external hostname from the database
     let service = service::Entity::find()

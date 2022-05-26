@@ -11,7 +11,7 @@ mod registry;
 mod routes;
 
 static DB_URI: Lazy<String> = env_utils::lazy_env!("DB_URI", "sqlite://./db.db");
-static GAIA_ADDR: Lazy<String> = env_utils::lazy_env!("GAIA_ADDR", "http://gaia-backend:8081");
+static GAIA_ADDR: Lazy<String> = env_utils::lazy_env!("GAIA_ADDR", "gaia-backend:8081");
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
