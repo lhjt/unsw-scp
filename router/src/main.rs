@@ -1,10 +1,12 @@
+use std::env;
+
 use actix_web::{
     web::{self, Data},
-    App, HttpServer,
+    App,
+    HttpServer,
 };
 use migration::{Migrator, MigratorTrait};
 use once_cell::sync::Lazy;
-use std::env;
 
 mod gaia_utils;
 mod registry;
@@ -26,7 +28,7 @@ async fn main() -> anyhow::Result<()> {
     Ok(HttpServer::new(move || {
         App::new().app_data(Data::new(connection.clone())).service(
             web::scope("/api")
-                .service(routes::evaluate)
+                .service(routes::evaluation::evaluate)
                 .service(routes::create_service::create_service),
         )
     })
