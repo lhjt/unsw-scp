@@ -4,6 +4,11 @@ use crate::routes::create_service::{NewFlag, NewService};
 
 /// Valiadate a list of new services. Returns whether or not the service definitions are valid.
 pub(crate) fn validate_services(service_definitions: &[NewService]) -> bool {
+    // ensure that there is at least one service
+    if service_definitions.is_empty() {
+        return false;
+    }
+
     // ensure that all service names are unique
     if service_definitions
         .iter()
