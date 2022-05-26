@@ -2,7 +2,10 @@ use std::{borrow::Cow, fs::File, io::BufReader, vec};
 
 use once_cell::sync::OnceCell;
 use rustls::{
-    server::AllowAnyAnonymousOrAuthenticatedClient, Certificate, PrivateKey, RootCertStore,
+    server::AllowAnyAnonymousOrAuthenticatedClient,
+    Certificate,
+    PrivateKey,
+    RootCertStore,
     ServerConfig,
 };
 use tracing::{debug, instrument, warn};

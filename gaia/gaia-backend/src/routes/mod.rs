@@ -2,7 +2,12 @@ use std::collections::HashSet;
 
 use actix_web::{
     error::{ErrorForbidden, ErrorInternalServerError},
-    get, post, web, Error, HttpRequest, HttpResponse,
+    get,
+    post,
+    web,
+    Error,
+    HttpRequest,
+    HttpResponse,
 };
 use entity::{role, user};
 use sea_orm::{DatabaseConnection, EntityTrait};
@@ -63,9 +68,9 @@ pub(crate) async fn set_user_roles(
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 struct UserWithRole {
-    pub id: String,
+    pub id:    String,
     pub email: String,
-    pub name: Option<String>,
+    pub name:  Option<String>,
     pub roles: Vec<String>,
 }
 
@@ -92,9 +97,9 @@ pub(crate) async fn get_users(
         .map_err(ise!("AUFWR"))?
         .into_iter()
         .map(|(user, roles)| UserWithRole {
-            id: user.user_id,
+            id:    user.user_id,
             email: user.email,
-            name: user.name,
+            name:  user.name,
             roles: roles.into_iter().map(|f| f.name).collect(),
         })
         .collect();

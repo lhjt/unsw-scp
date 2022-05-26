@@ -2,10 +2,17 @@
 
 use actix_web::{
     error::{
-        self, ErrorBadRequest, ErrorForbidden, ErrorInternalServerError, ErrorNotFound,
+        self,
+        ErrorBadRequest,
+        ErrorForbidden,
+        ErrorInternalServerError,
+        ErrorNotFound,
         ErrorUnauthorized,
     },
-    web, Error, HttpRequest, HttpResponse,
+    web,
+    Error,
+    HttpRequest,
+    HttpResponse,
 };
 use awc::Client;
 use tracing::instrument;
@@ -14,7 +21,8 @@ use url::Url;
 use crate::{
     middleware::Email,
     router_utils::{self, EvaluationErrors},
-    BASE_DOMAIN, ROUTER_URL,
+    BASE_DOMAIN,
+    ROUTER_URL,
 };
 
 /// Macro to quickly construct an internal server error with an error code.

@@ -2,7 +2,8 @@ use std::collections::HashSet;
 
 use actix_web::{
     error::{ErrorBadRequest, ErrorInternalServerError, ErrorNotFound, ErrorUnauthorized},
-    Error, HttpRequest,
+    Error,
+    HttpRequest,
 };
 use entity::{role, user};
 use intra_jwt::ClaimsData;

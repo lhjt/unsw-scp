@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 #[sea_orm(table_name = "categories")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false, unique, indexed)]
-    pub id: i64,
+    pub id:   i64,
     #[sea_orm(unique)]
     pub name: String,
 }
@@ -19,15 +19,11 @@ pub enum Relation {
 }
 
 impl Related<super::service::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Service.def()
-    }
+    fn to() -> RelationDef { Relation::Service.def() }
 }
 
 impl Related<super::flag::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Flag.def()
-    }
+    fn to() -> RelationDef { Relation::Flag.def() }
 }
 
 impl ActiveModelBehavior for ActiveModel {}

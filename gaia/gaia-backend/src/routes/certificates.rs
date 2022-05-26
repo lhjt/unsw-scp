@@ -2,7 +2,10 @@ use actix_web::{
     error::{ErrorBadRequest, ErrorInternalServerError},
     get,
     http::header::{self, ContentType, DispositionParam},
-    post, web, Error, HttpResponse,
+    post,
+    web,
+    Error,
+    HttpResponse,
 };
 use entity::user;
 use idgenerator::{IdGeneratorOptions, IdInstance};
@@ -10,20 +13,31 @@ use lettre::{smtp::authentication::Credentials, SmtpClient, Transport};
 use lettre_email::EmailBuilder;
 use regex::Regex;
 use sea_orm::{
-    ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter, TransactionTrait,
+    ActiveModelTrait,
+    ColumnTrait,
+    DatabaseConnection,
+    EntityTrait,
+    QueryFilter,
+    TransactionTrait,
 };
 use serde::{Deserialize, Serialize};
 use tracing::info;
 
 use crate::{
     utils::{self, ise},
-    CA_CERT, CA_KEY, FROM_ADDR, PUBLIC_ADDR, SMTP_ADDR, SMTP_PASSWORD, SMTP_USERNAME,
+    CA_CERT,
+    CA_KEY,
+    FROM_ADDR,
+    PUBLIC_ADDR,
+    SMTP_ADDR,
+    SMTP_PASSWORD,
+    SMTP_USERNAME,
 };
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub(crate) struct UserEnrollmentPayload {
     pub email: String,
-    pub name: Option<String>,
+    pub name:  Option<String>,
 }
 
 #[post("/enrol")]
@@ -31,8 +45,8 @@ pub(crate) async fn enrol_user(
     conn: web::Data<DatabaseConnection>,
     data: web::Json<UserEnrollmentPayload>,
 ) -> Result<HttpResponse, Error> {
-    // If the user already exists in the database, they should not be allowed to resend themselves an email.
-    // Users are added to the database once they download their file.
+    // If the user already exists in the database, they should not be allowed to resend themselves
+    // an email. Users are added to the database once they download their file.
     if user::Entity::find()
         .filter(user::Column::Email.eq(data.0.email.clone()))
         .one(conn.as_ref())
@@ -45,8 +59,8 @@ pub(crate) async fn enrol_user(
         return Err(ErrorBadRequest("This user has already downloaded their certificates. If this is an error, please contact the administrators."));
     }
 
-    // User has not downloaded the certificates yet. Generate a download link and send them an email.
-    // Validate that the email is either a UNSW email or CBA email.
+    // User has not downloaded the certificates yet. Generate a download link and send them an
+    // email. Validate that the email is either a UNSW email or CBA email.
     let regex = Regex::new(r"(?m)(((z\d{7})@unsw\.edu\.au)|((.+)@cba\.com\.au))").unwrap();
     if !regex.is_match(&data.email) {
         // Invalid email address; refuse
@@ -172,7 +186,7 @@ pub(crate) async fn download_certs(
         .content_type(ContentType::octet_stream())
         .insert_header(header::ContentDisposition {
             disposition: header::DispositionType::Attachment,
-            parameters: vec![DispositionParam::Filename("certificates.pfx".to_string())],
+            parameters:  vec![DispositionParam::Filename("certificates.pfx".to_string())],
         })
         .body(client_pfx))
 }

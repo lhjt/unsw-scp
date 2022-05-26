@@ -7,10 +7,10 @@ use sea_orm::entity::prelude::*;
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
     pub user_id: String,
-    pub name: Option<String>,
+    pub name:    Option<String>,
     /// The email that the user used to request their certificates.
     #[sea_orm(unique, indexed)]
-    pub email: String,
+    pub email:   String,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
@@ -20,9 +20,7 @@ pub enum Relation {
 }
 
 impl Related<super::role::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Role.def()
-    }
+    fn to() -> RelationDef { Relation::Role.def() }
 }
 
 impl ActiveModelBehavior for ActiveModel {}

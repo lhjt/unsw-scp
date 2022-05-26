@@ -4,9 +4,7 @@ use sea_orm_migration::prelude::*;
 pub struct Migration;
 
 impl MigrationName for Migration {
-    fn name(&self) -> &str {
-        "m20220101_000003_create_index"
-    }
+    fn name(&self) -> &str { "m20220101_000003_create_index" }
 }
 
 #[async_trait::async_trait]

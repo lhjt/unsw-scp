@@ -3,7 +3,8 @@ use std::env;
 use actix_web::{
     middleware::Logger,
     web::{self, Data},
-    App, HttpServer,
+    App,
+    HttpServer,
 };
 use anyhow::Context;
 use migration::{Migrator, MigratorTrait};

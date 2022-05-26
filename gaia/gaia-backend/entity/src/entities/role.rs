@@ -8,7 +8,7 @@ pub struct Model {
     #[sea_orm(primary_key)]
     pub role_id: i32,
     #[sea_orm(indexed)]
-    pub name: String,
+    pub name:    String,
     #[sea_orm(indexed)]
     pub user_id: String,
 }
@@ -24,9 +24,7 @@ pub enum Relation {
 }
 
 impl Related<super::user::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::User.def()
-    }
+    fn to() -> RelationDef { Relation::User.def() }
 }
 
 impl ActiveModelBehavior for ActiveModel {}

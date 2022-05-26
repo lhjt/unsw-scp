@@ -31,20 +31,20 @@ pub(crate) fn create_download_token(user_id: &str, signup_email: &str) -> String
         Err(e) => {
             error!("e = {:#?}", e);
             panic!()
-        }
+        },
     }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub(crate) struct PasetoResult {
-    pub iss: String,
+    pub iss:          String,
     /// Not Before
-    pub nbf: String,
-    pub user_id: String,
+    pub nbf:          String,
+    pub user_id:      String,
     /// The email that was used to generate this token.
     pub signup_email: String,
     /// Expiry
-    pub exp: String,
+    pub exp:          String,
 }
 
 /// Decrypts a download token and returns the ID from within the token.
@@ -54,7 +54,7 @@ pub(crate) fn decrypt_download_token(token: &str) -> Option<PasetoResult> {
         Err(e) => {
             error!("e = {:#?}", e);
             return None;
-        }
+        },
     };
 
     let result = match serde_json::from_str::<PasetoResult>(&decrypted) {
@@ -62,7 +62,7 @@ pub(crate) fn decrypt_download_token(token: &str) -> Option<PasetoResult> {
         Err(e) => {
             error!("e = {:#?}", e);
             return None;
-        }
+        },
     };
 
     let valid = match chrono::DateTime::parse_from_rfc3339(&result.exp) {
@@ -70,7 +70,7 @@ pub(crate) fn decrypt_download_token(token: &str) -> Option<PasetoResult> {
         Err(e) => {
             error!("e = {:#?}", e);
             return None;
-        }
+        },
     };
 
     if !valid {

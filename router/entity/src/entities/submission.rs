@@ -6,9 +6,9 @@ use serde::{Deserialize, Serialize};
 #[sea_orm(table_name = "submissions")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false, unique, indexed)]
-    pub id: i64,
-    pub user_id: i64,
-    pub flag_id: i64,
+    pub id:              i64,
+    pub user_id:         i64,
+    pub flag_id:         i64,
     #[sea_orm(indexed)]
     pub submission_time: chrono::DateTime<Utc>,
 }
@@ -30,15 +30,11 @@ pub enum Relation {
 }
 
 impl Related<super::user::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::User.def()
-    }
+    fn to() -> RelationDef { Relation::User.def() }
 }
 
 impl Related<super::flag::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Flag.def()
-    }
+    fn to() -> RelationDef { Relation::Flag.def() }
 }
 
 impl ActiveModelBehavior for ActiveModel {}

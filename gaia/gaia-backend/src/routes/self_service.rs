@@ -1,7 +1,9 @@
-use crate::utils::{self, get_token_id, ise};
+use std::collections::HashSet;
+
 use actix_web::{error::ErrorInternalServerError, get, web, Error, HttpRequest, HttpResponse};
 use sea_orm::DatabaseConnection;
-use std::collections::HashSet;
+
+use crate::utils::{self, get_token_id, ise};
 
 #[get("/selfserve/id")]
 pub(crate) async fn get_id(req: HttpRequest) -> Result<HttpResponse, Error> {
