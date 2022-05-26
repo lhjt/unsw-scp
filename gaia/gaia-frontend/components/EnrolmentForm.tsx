@@ -10,9 +10,9 @@ const CenteredLayout = styled("div", {
     flexDirection: "column",
 });
 
-interface EnrolmentButtonProps {}
+interface EnrolmentFormProps {}
 
-const EnrolmentButton: FunctionComponent<EnrolmentButtonProps> = () => {
+const EnrolmentForm: FunctionComponent<EnrolmentFormProps> = () => {
     const [isSubmitting, setSubmitting] = useState(false);
     const [radioValue, setRadioValue] = useState("1");
     const [zidValue, setZIDValue] = useState("");
@@ -118,4 +118,4 @@ const EnrolmentButton: FunctionComponent<EnrolmentButtonProps> = () => {
     );
 };
 
-export default EnrolmentButton;
+export default EnrolmentForm;
