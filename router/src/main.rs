@@ -1,11 +1,11 @@
 #![warn(clippy::pedantic)]
+#![allow(clippy::unused_async)]
 
 use std::env;
 
 use actix_web::{
     web::{self, Data},
-    App,
-    HttpServer,
+    App, HttpServer,
 };
 use migration::{Migrator, MigratorTrait};
 use once_cell::sync::Lazy;
@@ -13,6 +13,22 @@ use once_cell::sync::Lazy;
 mod gaia_utils;
 mod registry;
 mod routes;
+
+static JWT_PEM: Lazy<String> = once_cell::sync::Lazy::new(|| match env::var("JWT_PEM_LOC") {
+    Ok(v) => std::fs::read_to_string(v).unwrap_or_else(|_| panic!("JWT PEM missing")),
+    Err(_) => {
+        std::fs::read_to_string("/certs/jwt-key.pem").unwrap_or_else(|_| panic!("JWT PEM missing"))
+    },
+});
+
+/// HMAC key used for authenticating flags
+#[allow(clippy::match_wild_err_arm)]
+static HMAC_KEY: Lazy<String> = once_cell::sync::Lazy::new(|| match env::var("HMAC_KEY") {
+    Ok(v) => v,
+    Err(_) => {
+        panic!("HMAC_KEY env var missing")
+    },
+});
 
 static DB_URI: Lazy<String> = env_utils::lazy_env!("DB_URI", "sqlite://./db.db");
 static GAIA_ADDR: Lazy<String> = env_utils::lazy_env!("GAIA_ADDR", "gaia-backend:8081");
@@ -31,7 +47,8 @@ async fn main() -> anyhow::Result<()> {
         App::new().app_data(Data::new(connection.clone())).service(
             web::scope("/api")
                 .service(routes::evaluation::evaluate)
-                .service(routes::create_service::create_service),
+                .service(routes::create_service::create_service)
+                .service(web::scope("/flags").service(routes::flags::generate_flag)),
         )
     })
     .bind(("0.0.0.0", 8082))?

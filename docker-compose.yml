@@ -46,5 +46,8 @@ services:
       - "8083:8082"
     environment:
       - "DB_URI=sqlite:///data/db.db"
+      - "RUST_LOG=debug"
+      - "HMAC_KEY=12345679801234567980123456798012"
     volumes:
       - ./data/router:/data
+      - ./data/certs:/certs
