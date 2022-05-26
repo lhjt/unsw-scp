@@ -3,7 +3,8 @@ use std::collections::HashMap;
 use actix_web::{error::ErrorUnauthorized, get, web, Error, HttpRequest, HttpResponse};
 use chrono::Utc;
 use router_entity::{
-    category, challenge,
+    category,
+    challenge,
     flag::{self, FlagType},
     service,
 };
@@ -15,27 +16,27 @@ use crate::handler_utils::ise;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 struct ReturnPayload {
     /// The ID of the challenge
-    pub(crate) id: i64,
+    pub(crate) id:       i64,
     pub(crate) services: Vec<ReturnService>,
-    pub(crate) flags: Vec<ReturnFlag>,
+    pub(crate) flags:    Vec<ReturnFlag>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 struct ReturnFlag {
-    pub(crate) id: String,
-    pub(crate) flag_type: FlagType,
+    pub(crate) id:           String,
+    pub(crate) flag_type:    FlagType,
     pub(crate) display_name: String,
-    pub(crate) category: String,
-    pub(crate) points: i32,
+    pub(crate) category:     String,
+    pub(crate) points:       i32,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 struct ReturnService {
-    pub(crate) id: i64,
-    pub(crate) category: String,
-    pub(crate) name: String,
+    pub(crate) id:         i64,
+    pub(crate) category:   String,
+    pub(crate) name:       String,
     pub(crate) not_before: Option<chrono::DateTime<Utc>>,
-    pub(crate) not_after: Option<chrono::DateTime<Utc>>,
+    pub(crate) not_after:  Option<chrono::DateTime<Utc>>,
 }
 
 #[get("")]
@@ -93,10 +94,10 @@ pub(crate) async fn get_all(
                     }
 
                     Some(ReturnService {
-                        category: categories.get(&s.category_id).unwrap().clone(),
-                        id: s.id,
-                        name: s.name,
-                        not_after: s.not_after,
+                        category:   categories.get(&s.category_id).unwrap().clone(),
+                        id:         s.id,
+                        name:       s.name,
+                        not_after:  s.not_after,
                         not_before: s.not_before,
                     })
                 })
@@ -115,11 +116,11 @@ pub(crate) async fn get_all(
             let flags = flags
                 .into_iter()
                 .map(|f| ReturnFlag {
-                    category: categories.get(&f.category_id).unwrap().clone(),
+                    category:     categories.get(&f.category_id).unwrap().clone(),
                     display_name: f.display_name,
-                    flag_type: f.flag_type,
-                    id: f.id,
-                    points: f.points,
+                    flag_type:    f.flag_type,
+                    id:           f.id,
+                    points:       f.points,
                 })
                 .collect();
             map.insert(
@@ -132,8 +133,8 @@ pub(crate) async fn get_all(
     let return_data: Vec<ReturnPayload> = map
         .into_iter()
         .map(|(k, v)| ReturnPayload {
-            id: k,
-            flags: v.1,
+            id:       k,
+            flags:    v.1,
             services: v.0,
         })
         .collect();

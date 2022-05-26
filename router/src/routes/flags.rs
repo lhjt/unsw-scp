@@ -1,6 +1,10 @@
 use actix_web::{
     error::{ErrorForbidden, ErrorNotFound, ErrorUnauthorized},
-    get, web, Error, HttpRequest, HttpResponse,
+    get,
+    web,
+    Error,
+    HttpRequest,
+    HttpResponse,
 };
 use hmac::{Hmac, Mac};
 use router_entity::flag;

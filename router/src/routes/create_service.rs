@@ -2,13 +2,22 @@ use std::collections::{HashMap, HashSet};
 
 use actix_web::{
     error::{ErrorBadRequest, ErrorForbidden, ErrorInternalServerError, ErrorUnauthorized},
-    post, web, Error, HttpRequest, HttpResponse,
+    post,
+    web,
+    Error,
+    HttpRequest,
+    HttpResponse,
 };
 use chrono::Utc;
 use idgenerator::{IdGeneratorOptions, IdInstance};
 use router_entity::{category, challenge, flag, service};
 use sea_orm::{
-    ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter, Set,
+    ActiveModelTrait,
+    ColumnTrait,
+    DatabaseConnection,
+    EntityTrait,
+    QueryFilter,
+    Set,
     TransactionTrait,
 };
 use serde::{Deserialize, Serialize};
@@ -27,33 +36,33 @@ macro_rules! ise {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub(crate) struct NewService {
-    pub(crate) name: String,
+    pub(crate) name:     String,
     /// The category that the service is part of.
     pub(crate) category: String,
     /// The date before which students cannot access the challenge.
-    pub(crate) nbf: Option<chrono::DateTime<Utc>>,
+    pub(crate) nbf:      Option<chrono::DateTime<Utc>>,
     /// The date after which students cannot access the challenge.
-    pub(crate) naf: Option<chrono::DateTime<Utc>>,
+    pub(crate) naf:      Option<chrono::DateTime<Utc>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub(crate) struct NewFlag {
     /// The flag's type. Should be either `static` or `dynamic`.
-    pub(crate) flag_type: String,
+    pub(crate) flag_type:    String,
     /// The unique ID of the flag. Should be unique across all flags.
-    pub(crate) id: String,
+    pub(crate) id:           String,
     pub(crate) display_name: String,
-    pub(crate) category: String,
-    pub(crate) points: i32,
+    pub(crate) category:     String,
+    pub(crate) points:       i32,
     /// The flag that will be used as part of the flag generation process.
     /// If the flag type is `static`, it will be the actual flag that is submitted.
-    pub(crate) flag: String,
+    pub(crate) flag:         String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub(crate) struct NewServicePayload {
     pub(crate) services: Vec<NewService>,
-    pub(crate) flags: Vec<NewFlag>,
+    pub(crate) flags:    Vec<NewFlag>,
 }
 
 #[tracing::instrument]
@@ -133,7 +142,7 @@ pub(crate) async fn create_service(
                 let new_id = IdInstance::next_id();
                 category_name_id_map.insert((*c).to_string(), new_id);
                 Some(category::ActiveModel {
-                    id: Set(new_id),
+                    id:   Set(new_id),
                     name: Set((*c).to_string()),
                 })
             }
@@ -172,14 +181,14 @@ pub(crate) async fn create_service(
         .services
         .iter()
         .map(|s| service::ActiveModel {
-            id: Set(IdInstance::next_id()),
-            category_id: Set(*category_name_id_map.get(&s.category).unwrap()),
-            challenge_id: Set(new_challenge_id),
+            id:                Set(IdInstance::next_id()),
+            category_id:       Set(*category_name_id_map.get(&s.category).unwrap()),
+            challenge_id:      Set(new_challenge_id),
             external_hostname: Set(s.name.clone()),
             internal_hostname: Set(format!("{}.challenges.svc.cluster.local", s.name)),
-            name: Set(s.name.clone()),
-            not_after: Set(s.naf),
-            not_before: Set(s.nbf),
+            name:              Set(s.name.clone()),
+            not_after:         Set(s.naf),
+            not_before:        Set(s.nbf),
         })
         .collect::<Vec<service::ActiveModel>>();
 
@@ -211,16 +220,16 @@ pub(crate) async fn create_service(
             .flags
             .iter()
             .map(|f| flag::ActiveModel {
-                category_id: Set(*category_name_id_map.get(&f.category).unwrap()),
+                category_id:  Set(*category_name_id_map.get(&f.category).unwrap()),
                 challenge_id: Set(new_challenge_id),
-                flag: Set(f.flag.clone()),
-                flag_type: Set(match f.flag_type.as_str() {
+                flag:         Set(f.flag.clone()),
+                flag_type:    Set(match f.flag_type.as_str() {
                     "static" => flag::FlagType::Static,
                     "dynamic" => flag::FlagType::Dynamic,
                     v => unreachable!("got: {}", v),
                 }),
-                id: Set(f.id.clone()),
-                points: Set(f.points),
+                id:           Set(f.id.clone()),
+                points:       Set(f.points),
                 display_name: Set(f.display_name.clone()),
             })
             .collect::<Vec<flag::ActiveModel>>();

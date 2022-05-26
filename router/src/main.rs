@@ -5,7 +5,8 @@ use std::env;
 
 use actix_web::{
     web::{self, Data},
-    App, HttpServer,
+    App,
+    HttpServer,
 };
 use migration::{Migrator, MigratorTrait};
 use once_cell::sync::Lazy;

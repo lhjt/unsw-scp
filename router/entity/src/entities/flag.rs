@@ -16,15 +16,15 @@ pub enum FlagType {
 #[sea_orm(table_name = "flags")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false, unique, indexed)]
-    pub id: String,
+    pub id:           String,
     #[sea_orm(indexed)]
     pub challenge_id: i64,
     #[sea_orm(indexed)]
-    pub category_id: i64,
+    pub category_id:  i64,
     #[sea_orm(indexed)]
-    pub flag: String,
-    pub flag_type: FlagType,
-    pub points: i32,
+    pub flag:         String,
+    pub flag_type:    FlagType,
+    pub points:       i32,
     pub display_name: String,
 }
 
@@ -47,21 +47,15 @@ pub enum Relation {
 }
 
 impl Related<super::challenge::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Challenge.def()
-    }
+    fn to() -> RelationDef { Relation::Challenge.def() }
 }
 
 impl Related<super::category::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Category.def()
-    }
+    fn to() -> RelationDef { Relation::Category.def() }
 }
 
 impl Related<super::submission::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Submission.def()
-    }
+    fn to() -> RelationDef { Relation::Submission.def() }
 }
 
 impl ActiveModelBehavior for ActiveModel {}
