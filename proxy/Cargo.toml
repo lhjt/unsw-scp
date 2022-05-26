@@ -9,6 +9,7 @@ edition = "2021"
 actix-tls = { version = "3.0.3", features = ["rustls"] }
 actix-web = { version = "4.0.1", features = ["rustls", "secure-cookies"] }
 awc = { version = "3.0.0", features = ["rustls"] }
+env_utils = { path = "../env_utils" }
 futures-util = "0.3.21"
 intra-jwt = { path = "../intra-jwt" }
 once_cell = "1.11.0"

@@ -10,7 +10,6 @@ use tracing::info;
 
 use crate::tls::create_tls_server_config;
 
-mod env_util;
 mod middleware;
 mod routes;
 mod tls;
@@ -18,11 +17,11 @@ mod tls;
 const PORT: u16 = 8080;
 
 // env declarations
-static BASE_DOMAIN: Lazy<String> = env_util::lazy_env!("BASE_DOMAIN", "local.host:8443");
-static REGISTRY_URL: Lazy<String> = env_util::lazy_env!("REGISTRY_URL", "registry");
-static CA_CERT: Lazy<String> = env_util::lazy_env!("CA_CERT", "certs/rootCA.pem");
-static SERVER_CERT: Lazy<String> = env_util::lazy_env!("SERVER_CERT", "certs/server-cert.pem");
-static SERVER_KEY: Lazy<String> = env_util::lazy_env!("SERVER_KEY", "certs/server-key.pem");
+static BASE_DOMAIN: Lazy<String> = env_utils::lazy_env!("BASE_DOMAIN", "local.host:8443");
+static REGISTRY_URL: Lazy<String> = env_utils::lazy_env!("REGISTRY_URL", "registry");
+static CA_CERT: Lazy<String> = env_utils::lazy_env!("CA_CERT", "certs/rootCA.pem");
+static SERVER_CERT: Lazy<String> = env_utils::lazy_env!("SERVER_CERT", "certs/server-cert.pem");
+static SERVER_KEY: Lazy<String> = env_utils::lazy_env!("SERVER_KEY", "certs/server-key.pem");
 
 #[tokio::main]
 async fn main() -> std::io::Result<()> {

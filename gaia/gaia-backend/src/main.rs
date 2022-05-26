@@ -9,7 +9,6 @@ use anyhow::Context;
 use migration::{Migrator, MigratorTrait};
 use once_cell::sync::Lazy;
 
-mod env_util;
 mod routes;
 mod utils;
 
@@ -31,13 +30,13 @@ static CA_KEY: Lazy<String> = once_cell::sync::Lazy::new(|| match env::var("CA_K
         .unwrap_or_else(|_| panic!("CA_KEY PEM missing")),
 });
 
-static DB_URI: Lazy<String> = env_util::lazy_env!("DB_URI", "sqlite://./db.db");
-static PUBLIC_ADDR: Lazy<String> = env_util::lazy_env!("PUBLIC_ADDR", "login.local.host:8443");
+static DB_URI: Lazy<String> = env_utils::lazy_env!("DB_URI", "sqlite://./db.db");
+static PUBLIC_ADDR: Lazy<String> = env_utils::lazy_env!("PUBLIC_ADDR", "login.local.host:8443");
 
-static FROM_ADDR: Lazy<String> = env_util::lazy_env!("FROM_ADDR", "noreply@local.host");
-env_util::panic_env!(SMTP_ADDR);
-env_util::panic_env!(SMTP_USERNAME);
-env_util::panic_env!(SMTP_PASSWORD);
+static FROM_ADDR: Lazy<String> = env_utils::lazy_env!("FROM_ADDR", "noreply@local.host");
+env_utils::panic_env!(SMTP_ADDR);
+env_utils::panic_env!(SMTP_USERNAME);
+env_utils::panic_env!(SMTP_PASSWORD);
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {

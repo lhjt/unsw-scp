@@ -1,4 +1,7 @@
+#![allow(unused)]
+
 /// Create a static variable through an environment variable.
+#[macro_export]
 macro_rules! lazy_env {
     ($var:expr, $default:expr) => {
         once_cell::sync::Lazy::new(|| match env::var($var) {
@@ -9,6 +12,7 @@ macro_rules! lazy_env {
 }
 
 /// Fetches an environment variable on startup. If it is not present, panics.
+#[macro_export]
 macro_rules! panic_env {
     ($var:ident) => {
         static $var: Lazy<String> =
@@ -22,5 +26,5 @@ macro_rules! panic_env {
     };
 }
 
-pub(crate) use lazy_env;
-pub(crate) use panic_env;
+// pub(crate) use lazy_env;
+// pub(crate) use panic_env;

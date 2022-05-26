@@ -1368,6 +1368,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "env_utils"
+version = "0.1.0"
+
+[[package]]
 name = "event-listener"
 version = "2.5.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1614,6 +1618,7 @@ dependencies = [
  "certman",
  "chrono",
  "entity",
+ "env_utils",
  "idgenerator",
  "intra-jwt",
  "lettre",
@@ -2681,6 +2686,7 @@ dependencies = [
  "actix-tls",
  "actix-web",
  "awc",
+ "env_utils",
  "futures-util",
  "intra-jwt",
  "once_cell",
