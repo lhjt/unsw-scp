@@ -44,9 +44,6 @@ pub(crate) fn get_token_id(req: &HttpRequest) -> Result<String, Error> {
 
     // Get user id from email
     let id = email
-        .split('+')
-        .next()
-        .ok_or_else(|| ErrorBadRequest("Invalid authentication token"))?
         .strip_prefix("_scpU")
         .ok_or_else(|| ErrorBadRequest("Invalid authentication token"))?
         .strip_suffix("@unsw.scp.platform")

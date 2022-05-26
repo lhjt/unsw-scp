@@ -133,7 +133,7 @@ mod tests {
 
         let client_cert = create_client_cert(
             "Test User 2".to_owned(),
-            "_scpUz000000+hs@student.host.domain".to_owned(),
+            "_scpU000000000@unsw.scp.platform".to_owned(),
         )
         .unwrap();
 
