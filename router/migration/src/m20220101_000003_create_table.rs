@@ -1,11 +1,11 @@
-use router_entity::challenge;
+use router_entity::category;
 use sea_orm_migration::prelude::*;
 
 pub struct Migration;
 
 impl MigrationName for Migration {
     fn name(&self) -> &str {
-        "m20220101_000001_create_table"
+        "m20220101_000003_create_table"
     }
 }
 
@@ -15,14 +15,20 @@ impl MigrationTrait for Migration {
         manager
             .create_table(
                 Table::create()
-                    .table(challenge::Entity)
+                    .table(category::Entity)
                     .if_not_exists()
                     .col(
-                        ColumnDef::new(challenge::Column::Id)
+                        ColumnDef::new(category::Column::Id)
                             .integer()
                             .not_null()
                             .primary_key()
                             .unique_key(),
+                    )
+                    .col(
+                        ColumnDef::new(category::Column::Name)
+                            .string()
+                            .unique_key()
+                            .not_null(),
                     )
                     .to_owned(),
             )

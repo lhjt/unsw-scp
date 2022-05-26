@@ -18,10 +18,10 @@ pub struct Model {
     pub external_hostname: String,
     /// Not before: time before which the service is inaccessible to students.
     #[sea_orm(indexed)]
-    pub nfb: chrono::DateTime<Utc>,
+    pub not_before: chrono::DateTime<Utc>,
     /// Not after: time after which the service is inaccessible to students.
     #[sea_orm(indexed)]
-    pub naf: chrono::DateTime<Utc>,
+    pub not_after: chrono::DateTime<Utc>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

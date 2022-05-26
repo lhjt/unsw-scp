@@ -1,3 +1,4 @@
+use chrono::Utc;
 use sea_orm::entity::prelude::*;
 use serde::{Deserialize, Serialize};
 
@@ -8,6 +9,8 @@ pub struct Model {
     pub id: i64,
     pub user_id: i64,
     pub flag_id: i64,
+    #[sea_orm(indexed)]
+    pub submission_time: chrono::DateTime<Utc>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
