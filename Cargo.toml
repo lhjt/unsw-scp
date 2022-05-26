@@ -6,4 +6,7 @@ members = [
     "gaia/gaia-backend",
     "gaia/gaia-backend/migration",
     "gaia/gaia-backend/entity",
+    "router",
+    "router/migration",
+    "router/entity"
 ]

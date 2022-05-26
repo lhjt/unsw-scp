@@ -1,0 +1,15 @@
+[package]
+name = "router-migration"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[lib]
+name = "migration"
+path = "src/lib.rs"
+
+[dependencies]
+router-entity = { path = "../entity" }
+
+[dependencies.sea-orm-migration]
+version = "^0.8.0"

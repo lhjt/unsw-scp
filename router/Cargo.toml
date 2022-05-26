@@ -1,0 +1,24 @@
+[package]
+name = "router"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+router-entity = { path = "entity" }
+router-migration = { path = "migration" } # depends on your needs
+actix-web = "4.0.1"
+intra-jwt = { path = "../intra-jwt" }
+sea-orm = { version = "0.8.0", default-features = false, features = [
+    "runtime-tokio-rustls",
+    "sqlx-sqlite",
+    "debug-print",
+] }
+serde = "1.0.137"
+serde_json = "1.0.81"
+thiserror = "1.0.31"
+tokio = { version = "1.18.2", features = ["macros", "rt-multi-thread"] }
+url = "2.2.2"
+
+[features]

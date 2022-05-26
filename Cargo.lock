@@ -2953,6 +2953,39 @@ dependencies = [
 ]
 
 [[package]]
+name = "router"
+version = "0.1.0"
+dependencies = [
+ "actix-web",
+ "intra-jwt",
+ "router-entity",
+ "router-migration",
+ "sea-orm",
+ "serde",
+ "serde_json",
+ "thiserror",
+ "tokio",
+ "url",
+]
+
+[[package]]
+name = "router-entity"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "sea-orm",
+ "serde",
+]
+
+[[package]]
+name = "router-migration"
+version = "0.1.0"
+dependencies = [
+ "router-entity",
+ "sea-orm-migration",
+]
+
+[[package]]
 name = "rsa"
 version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
