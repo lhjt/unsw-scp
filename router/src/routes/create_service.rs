@@ -140,11 +140,13 @@ pub(crate) async fn create_service(
         })
         .collect();
 
-    // Insert these newly generates categories into the db
-    category::Entity::insert_many(new_categories)
-        .exec(&txn)
-        .await
-        .map_err(ise!("CSINC"))?;
+    if !new_categories.is_empty() {
+        // Insert these newly generates categories into the db
+        category::Entity::insert_many(new_categories)
+            .exec(&txn)
+            .await
+            .map_err(ise!("CSINC"))?;
+    }
 
     // Insert new services into the database
     let new_services = payload
