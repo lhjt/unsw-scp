@@ -104,7 +104,7 @@ pub(crate) async fn create_service(
 
     // Setup id generator
     let generator_options = IdGeneratorOptions::new().worker_id(1).worker_id_bit_len(6);
-    let _ = IdInstance::init(generator_options).map_err(ise!("CIG"))?;
+    IdInstance::init(generator_options).map_err(ise!("CIG"))?;
     let new_challenge_id = IdInstance::next_id();
 
     // Create a new challenge
@@ -135,16 +135,16 @@ pub(crate) async fn create_service(
     let new_categories: Vec<category::ActiveModel> = categories_to_match
         .iter()
         .filter_map(|c| {
-            if !existing.contains_key(*c) {
-                let new_id = IdInstance::next_id();
-                category_name_id_map.insert(c.to_string(), new_id);
-                Some(category::ActiveModel {
-                    id:   Set(new_id),
-                    name: Set(c.to_string()),
-                })
-            } else {
+            if existing.contains_key(*c) {
                 category_name_id_map.insert((*c).to_string(), existing.get(*c).unwrap().id);
                 None
+            } else {
+                let new_id = IdInstance::next_id();
+                category_name_id_map.insert((*c).to_string(), new_id);
+                Some(category::ActiveModel {
+                    id:   Set(new_id),
+                    name: Set((*c).to_string()),
+                })
             }
         })
         .collect();
