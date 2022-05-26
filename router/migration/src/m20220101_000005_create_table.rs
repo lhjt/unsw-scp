@@ -4,7 +4,9 @@ use sea_orm_migration::prelude::*;
 pub struct Migration;
 
 impl MigrationName for Migration {
-    fn name(&self) -> &str { "m20220101_000005_create_table" }
+    fn name(&self) -> &str {
+        "m20220101_000005_create_table"
+    }
 }
 
 #[async_trait::async_trait]
@@ -50,6 +52,11 @@ impl MigrationTrait for Migration {
                     )
                     .col(ColumnDef::new(flag::Column::FlagType).integer().not_null())
                     .col(ColumnDef::new(flag::Column::Points).integer().not_null())
+                    .col(
+                        ColumnDef::new(flag::Column::DisplayName)
+                            .string()
+                            .not_null(),
+                    )
                     .to_owned(),
             )
             .await

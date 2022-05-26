@@ -2,24 +2,13 @@ use actix_web::{
     error::{ErrorForbidden, ErrorNotFound, ErrorUnauthorized},
     get, web, Error, HttpRequest, HttpResponse,
 };
-
 use hmac::{Hmac, Mac};
 use router_entity::flag;
 use sea_orm::{DatabaseConnection, EntityTrait};
 use serde::Deserialize;
 use sha2::Sha256;
 
-use crate::{HMAC_KEY, JWT_PEM};
-
-/// Macro to quickly construct an internal server error with an error code.
-macro_rules! ise {
-    ($code:expr) => {
-        |e| {
-            tracing::error!("exception occurred: {}", e);
-            actix_web::error::ErrorInternalServerError(concat!("Internal server error: EC.", $code))
-        }
-    };
-}
+use crate::{handler_utils::ise, HMAC_KEY, JWT_PEM};
 
 #[derive(Debug, Clone, Deserialize)]
 pub(crate) struct GenerateFlagQueryParams {

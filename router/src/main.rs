@@ -11,6 +11,7 @@ use migration::{Migrator, MigratorTrait};
 use once_cell::sync::Lazy;
 
 mod gaia_utils;
+mod handler_utils;
 mod registry;
 mod routes;
 
@@ -48,7 +49,8 @@ async fn main() -> anyhow::Result<()> {
             web::scope("/api")
                 .service(routes::evaluation::evaluate)
                 .service(routes::create_service::create_service)
-                .service(web::scope("/flags").service(routes::flags::generate_flag)),
+                .service(web::scope("/flags").service(routes::flags::generate_flag))
+                .service(web::scope("/challenges").service(routes::challenges::get_all_challenges)),
         )
     })
     .bind(("0.0.0.0", 8082))?
