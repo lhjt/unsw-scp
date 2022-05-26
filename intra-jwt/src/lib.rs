@@ -1,3 +1,5 @@
+#![warn(clippy::pedantic)]
+
 use anyhow::Context;
 use jwt_simple::prelude::{Claims, Duration, Ed25519KeyPair, EdDSAKeyPairLike, EdDSAPublicKeyLike};
 use serde::{Deserialize, Serialize};
@@ -19,6 +21,11 @@ impl ExtraClaimsData {
 
 /// Create a JWT for a user to be appended for intra service communication headers. Tokens are valid
 /// for 60s.
+///
+/// # Errors
+///
+/// Will error if the function is unable to construct an `Ed25519KeyPair` from the supplied PEM
+/// string.
 pub fn create_jwt(user_id: String, username: String, key_pair_pem: &str) -> anyhow::Result<String> {
     let additional = ExtraClaimsData::new(username);
 
@@ -32,6 +39,14 @@ pub fn create_jwt(user_id: String, username: String, key_pair_pem: &str) -> anyh
 }
 
 /// Verify if a jwt is valid and return the claims contained within.
+///
+/// # Errors
+///
+/// Will fail if:
+///
+/// - The function is inable to create an `Ed25519KeyPair` from the supplied PEM string
+/// - The function is unable to verify the token
+/// - The claims object does not have a subject
 pub fn verify_jwt(token: &str, key_pair_pem: &str) -> anyhow::Result<ClaimsData> {
     let key_pair = Ed25519KeyPair::from_pem(key_pair_pem)?;
     let public_key = key_pair.public_key();
