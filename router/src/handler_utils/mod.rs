@@ -8,4 +8,27 @@ macro_rules! ise {
     };
 }
 
+use actix_web::{
+    error::{ErrorForbidden, ErrorUnauthorized},
+    Error,
+    HttpRequest,
+};
+use intra_jwt::ClaimsData;
 pub(crate) use ise;
+
+use crate::JWT_PEM;
+
+/// Get claims from a HTTP request's auth token.
+pub(crate) fn get_claims(req: &HttpRequest) -> Result<ClaimsData, Error> {
+    // Get the auth token
+    let token = req
+        .headers()
+        .get("X-Scp-Auth")
+        .ok_or_else(|| ErrorUnauthorized("Missing authentication"))?
+        .to_str()
+        .map_err(ise!("GCEAH"))?;
+
+    // Process the token into claims
+    intra_jwt::verify_jwt(token, JWT_PEM.as_str())
+        .map_err(|_| ErrorForbidden("Unable to get claims from auth token"))
+}

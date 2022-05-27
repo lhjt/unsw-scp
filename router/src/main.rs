@@ -50,7 +50,11 @@ async fn main() -> anyhow::Result<()> {
             web::scope("/api")
                 .service(routes::evaluation::evaluate)
                 .service(routes::create_service::create_service)
-                .service(web::scope("/flags").service(routes::flags::generate_flag))
+                .service(
+                    web::scope("/flags")
+                        .service(routes::flags::generate_flag)
+                        .service(routes::flags::submit_flag),
+                )
                 .service(web::scope("/challenges").service(routes::challenges::get_all)),
         )
     })

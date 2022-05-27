@@ -34,7 +34,7 @@ impl MigrationTrait for Migration {
                     )
                     .col(
                         ColumnDef::new(submission::Column::FlagId)
-                            .integer()
+                            .string()
                             .not_null(),
                     )
                     .foreign_key(

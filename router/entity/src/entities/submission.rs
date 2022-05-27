@@ -8,7 +8,7 @@ pub struct Model {
     #[sea_orm(primary_key, auto_increment = false, unique, indexed)]
     pub id:              i64,
     pub user_id:         i64,
-    pub flag_id:         i64,
+    pub flag_id:         String,
     #[sea_orm(indexed)]
     pub submission_time: chrono::DateTime<Utc>,
 }

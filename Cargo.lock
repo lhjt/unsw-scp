@@ -3066,6 +3066,7 @@ dependencies = [
  "idgenerator",
  "intra-jwt",
  "once_cell",
+ "regex",
  "reqwest",
  "router-entity",
  "router-migration",

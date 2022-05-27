@@ -1,5 +1,5 @@
 use actix_web::{
-    error::{ErrorForbidden, ErrorNotFound, ErrorUnauthorized},
+    error::{ErrorBadGateway, ErrorNotFound},
     get,
     web,
     Error,
@@ -7,12 +7,12 @@ use actix_web::{
     HttpResponse,
 };
 use hmac::{Hmac, Mac};
-use router_entity::flag;
+use router_entity::flag::{self, FlagType};
 use sea_orm::{DatabaseConnection, EntityTrait};
 use serde::Deserialize;
 use sha2::Sha256;
 
-use crate::{handler_utils::ise, HMAC_KEY, JWT_PEM};
+use crate::{handler_utils::ise, HMAC_KEY};
 
 #[derive(Debug, Clone, Deserialize)]
 pub(crate) struct GenerateFlagQueryParams {
@@ -29,17 +29,7 @@ pub(crate) async fn generate_flag(
     conn: web::Data<DatabaseConnection>,
 ) -> Result<HttpResponse, Error> {
     // Get the auth token
-    let token = req
-        .headers()
-        .get("X-Scp-Auth")
-        .ok_or_else(|| ErrorUnauthorized("Missing authentication"))?
-        .to_str()
-        .map_err(ise!("GFEAH"))?;
-
-    // Process the token into claims
-    let claims = intra_jwt::verify_jwt(token, JWT_PEM.as_str())
-        .map_err(|_| ErrorForbidden("Unable to get claims from auth token"))?;
-
+    let claims = crate::handler_utils::get_claims(&req)?;
     // Get the user id/email
     let email = claims.user_id;
 
@@ -49,6 +39,10 @@ pub(crate) async fn generate_flag(
         .await
         .map_err(ise!("GFFFI"))?
         .ok_or_else(|| ErrorNotFound("Supplied flag ID does not exist"))?;
+
+    if let FlagType::Static = found_flag.flag_type {
+        return Err(ErrorBadGateway("Cannot generate a flag for a static flag"));
+    }
 
     // Hash the username and flag id together
     let mut mac = HmacSha256::new_from_slice(HMAC_KEY.as_bytes()).unwrap();
