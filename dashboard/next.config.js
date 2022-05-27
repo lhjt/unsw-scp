@@ -24,7 +24,7 @@ const themeConfig = buildThemeConfig();
 const nextConfig = {
   /** Disable the `X-Powered-By: Next.js` response header. */
   poweredByHeader: false,
-
+  experimental: { outputStandalone: true },
   /**
    * When set to something other than '', this field instructs Next to
    * expect all paths to have a specific directory prefix. This fact is
@@ -220,7 +220,13 @@ function derivePathPrefix() {
       const originUrl = gitConfig['remote "origin"'].url;
 
       // eslint-disable-next-line prettier/prettier
-      return '/' + originUrl.split('/').pop().replace(/\.git$/, '');
+      return (
+        '/' +
+        originUrl
+          .split('/')
+          .pop()
+          .replace(/\.git$/, '')
+      );
     }
   }
 

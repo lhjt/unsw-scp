@@ -51,3 +51,9 @@ services:
     volumes:
       - ./data/router:/data
       - ./data/certs:/certs
+  dashboard:
+    build: 
+      context: dashboard/
+      dockerfile: Dockerfile
+    ports:
+      - "8084:3000"
