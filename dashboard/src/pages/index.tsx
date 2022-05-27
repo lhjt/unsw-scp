@@ -42,12 +42,12 @@ const Index: FunctionComponent = () => {
           buttonClassName="euiAccordionForm__button"
           paddingSize="l">
           <div css={{ display: 'flex', flexWrap: 'wrap' }}>
-            <FlagCard displayName="Welcome!" />
-            <FlagCard displayName="Welcome!" />
-            <FlagCard displayName="Welcome!" />
-            <FlagCard displayName="Welcome!" />
-            <FlagCard displayName="Welcome!" />
-            <FlagCard displayName="Welcome!" />
+            <FlagCard displayName="Welcome!" points={2} />
+            <FlagCard
+              points={1}
+              displayName="Welcome!"
+              submissionDetails="Submitted at 20220527T134302+10:00"
+            />
           </div>
         </EuiAccordion>
       </div>
