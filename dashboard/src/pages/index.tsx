@@ -1,6 +1,5 @@
 import { FunctionComponent } from 'react';
 import Head from 'next/head';
-import Wrapper from '../components/starter/wrapper';
 import { EuiAccordion, EuiCallOut, EuiSpacer, EuiText } from '@elastic/eui';
 import Header from '../components/starter/header';
 import FlagCard from '../components/challenges/FlagCard';

@@ -15,7 +15,6 @@ const Header = () => {
 
   return (
     <EuiHeader
-      // position="fixed"
       sections={[
         {
           items: [
