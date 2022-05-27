@@ -12,8 +12,7 @@ use futures_util::future::LocalBoxFuture;
 use tracing::error;
 
 use super::Email;
-// TODO: move to env
-const DOMAIN: &str = "login.local.host:8443";
+use crate::BASE_DOMAIN;
 
 pub struct CheckCertificate;
 
@@ -99,7 +98,7 @@ where
                     let response = HttpResponse::Found()
                         .insert_header((
                             http::header::LOCATION,
-                            format!("https://{}/enrol", DOMAIN),
+                            format!("https://{}/enrol", BASE_DOMAIN.as_str()),
                         ))
                         .finish()
                         // constructed responses map to "right" body

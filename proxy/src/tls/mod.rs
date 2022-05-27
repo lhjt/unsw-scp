@@ -82,11 +82,19 @@ pub fn create_tls_server_config() -> Result<ServerConfig, std::io::Error> {
         .into_iter()
         .map(Certificate)
         .collect();
-    let mut keys: Vec<PrivateKey> = rustls_pemfile::pkcs8_private_keys(key_file)
+    let mut keys: Vec<PrivateKey> = rustls_pemfile::rsa_private_keys(key_file)
         .unwrap()
         .into_iter()
         .map(PrivateKey)
         .collect();
+    if keys.is_empty() {
+        // try with pkcs8
+        keys = rustls_pemfile::pkcs8_private_keys(key_file)
+            .unwrap()
+            .into_iter()
+            .map(PrivateKey)
+            .collect();
+    }
     Ok(config.with_single_cert(cert_chain, keys.remove(0)).unwrap())
 }
 
