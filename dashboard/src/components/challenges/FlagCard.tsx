@@ -110,12 +110,16 @@ const FlagCard: FunctionComponent<FlagCardProps> = ({
                         key={s}
                         onClick={() => {
                             window.open(
-                                `https://${s}.ctf.${process.env.BASE_DOMAIN ?? "local.host:8443"}/`,
+                                `https://${s}.ctf.${
+                                    process.env.NEXT_PUBLIC_BASE_DOMAIN ?? "local.host:8443"
+                                }/`,
                                 "_blank"
                             );
                         }}
                         css={{ marginBottom: "1rem", marginTop: "1rem" }}
-                        title={`${s}.ctf.${process.env.BASE_DOMAIN ?? "local.host:8443"}`}>
+                        title={`${s}.ctf.${
+                            process.env.NEXT_PUBLIC_BASE_DOMAIN ?? "local.host:8443"
+                        }`}>
                         <EuiLink>Visit this service</EuiLink>
                     </EuiCard>
                 ))}
