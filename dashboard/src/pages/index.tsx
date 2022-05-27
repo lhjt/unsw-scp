@@ -19,6 +19,7 @@ type NewFlag = {
     display_name: string;
     category: string;
     points: number;
+    submission_details?: string;
 };
 
 export const getServerSideProps: GetServerSideProps = async context => {
@@ -83,6 +84,7 @@ const Index: FunctionComponent<{
                 category: string;
                 points: number;
                 challenge: BigInt;
+                submission_details?: string;
             }[];
         };
     } = {};
@@ -156,6 +158,7 @@ const Index: FunctionComponent<{
                                     flagId={flag.id}
                                     displayName={flag.display_name}
                                     points={flag.points}
+                                    submissionDetails={flag.submission_details}
                                     services={categoryMap[category].services
                                         .filter(s => s.challenge === flag.challenge)
                                         .map(s => s.name)}

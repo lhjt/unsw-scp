@@ -47,18 +47,13 @@ const FlagCard: FunctionComponent<FlagCardProps> = ({
     const handleSubmit = async () => {
         setIsSubmitting(true);
 
-        const response = await fetch(
-            `https://ctf.${
-                process.env.BASE_DOMAIN ?? "local.host:8443"
-            }/api/flags/${flagId}/submit`,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ flag: flagValue }),
-            }
-        );
+        const response = await fetch(`/api/flags/${flagId}/submit`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ flag: flagValue }),
+        });
 
         if (response.status === 202) {
             setSubmissionDetails(`Submitted on ${new Date().toISOString()}`);

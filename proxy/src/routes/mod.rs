@@ -95,7 +95,7 @@ pub(crate) async fn route_whoami(
                         new_url = Url::parse(&format!("http://{}", ROUTER_URL.as_str())).unwrap();
                     } else {
                         // TODO: Show the dashboard
-                        new_url = Url::parse("https://httpbin.org").unwrap();
+                        new_url = Url::parse("http://dashboard:3000").unwrap();
                     }
                 },
             },

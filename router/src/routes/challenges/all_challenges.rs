@@ -7,11 +7,12 @@ use router_entity::{
     challenge,
     flag::{self, FlagType},
     service,
+    submission,
 };
-use sea_orm::{DatabaseConnection, EntityTrait};
+use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
 use serde::{Deserialize, Serialize};
 
-use crate::handler_utils::ise;
+use crate::handler_utils::{self, ise};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 struct ReturnPayload {
@@ -23,11 +24,12 @@ struct ReturnPayload {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 struct ReturnFlag {
-    pub(crate) id:           String,
-    pub(crate) flag_type:    FlagType,
-    pub(crate) display_name: String,
-    pub(crate) category:     String,
-    pub(crate) points:       i32,
+    pub(crate) id:                 String,
+    pub(crate) flag_type:          FlagType,
+    pub(crate) display_name:       String,
+    pub(crate) category:           String,
+    pub(crate) points:             i32,
+    pub(crate) submission_details: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -40,6 +42,7 @@ struct ReturnService {
 }
 
 #[get("")]
+#[allow(clippy::too_many_lines)]
 pub(crate) async fn get_all(
     req: HttpRequest,
     conn: web::Data<DatabaseConnection>,
@@ -116,11 +119,12 @@ pub(crate) async fn get_all(
             let flags = flags
                 .into_iter()
                 .map(|f| ReturnFlag {
-                    category:     categories.get(&f.category_id).unwrap().clone(),
-                    display_name: f.display_name,
-                    flag_type:    f.flag_type,
-                    id:           f.id,
-                    points:       f.points,
+                    category:           categories.get(&f.category_id).unwrap().clone(),
+                    display_name:       f.display_name,
+                    flag_type:          f.flag_type,
+                    id:                 f.id,
+                    points:             f.points,
+                    submission_details: None,
                 })
                 .collect();
             map.insert(
@@ -129,6 +133,51 @@ pub(crate) async fn get_all(
             );
         }
     }
+
+    // Get the auth token
+    let claims = handler_utils::get_claims(&req)?;
+    // Get the user id/email
+    let email = claims.user_id;
+
+    let uid = email
+        .strip_prefix("_scpU")
+        .unwrap()
+        .strip_suffix("@unsw.scp.platform")
+        .unwrap()
+        .to_string()
+        .parse::<i64>()
+        .unwrap();
+
+    // Get all flags that have a submission by this user
+    submission::Entity::find()
+        .filter(submission::Column::UserId.eq(uid))
+        .find_also_related(flag::Entity)
+        .all(conn.as_ref())
+        .await
+        .map_err(ise!("GCQFS"))?
+        .into_iter()
+        .filter_map(|(sub, flag)| {
+            flag.as_ref()?;
+
+            Some((sub, flag.unwrap()))
+        })
+        .for_each(|(submission, flag)| {
+            if !map.contains_key(&flag.challenge_id) {
+                return;
+            }
+            if let Some(f) = map
+                .get_mut(&flag.challenge_id)
+                .unwrap()
+                .1
+                .iter_mut()
+                .find(|f| f.id.as_str() == flag.id.as_str())
+            {
+                f.submission_details = Some(format!(
+                    "Submitted on {}",
+                    submission.submission_time.to_rfc3339()
+                ));
+            }
+        });
 
     let return_data: Vec<ReturnPayload> = map
         .into_iter()
