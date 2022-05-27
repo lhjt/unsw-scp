@@ -40,6 +40,11 @@ pub(crate) async fn evaluate_uri(
         EvaluationErrors::NoRoles
     })?;
 
+    // If a user does not have any roles at all, they are blacklisted from the system.
+    if roles.is_empty() {
+        return Err(EvaluationErrors::Forbidden);
+    }
+
     // Attempt to find a service with the external hostname from the database
     let service = service::Entity::find()
         .filter(service::Column::ExternalHostname.eq(uri.host().unwrap().to_string()))
