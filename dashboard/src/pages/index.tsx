@@ -153,6 +153,7 @@ const Index: FunctionComponent<{
                             {categoryMap[category].flags.map(flag => (
                                 <FlagCard
                                     key={flag.id}
+                                    flagId={flag.id}
                                     displayName={flag.display_name}
                                     points={flag.points}
                                     services={categoryMap[category].services
