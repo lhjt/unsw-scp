@@ -1,10 +1,5 @@
 import { FunctionComponent } from 'react';
-import {
-  EuiHeaderSectionItemButton,
-  EuiIcon,
-  EuiToolTip,
-  useEuiTheme,
-} from '@elastic/eui';
+import { EuiHeaderSectionItemButton, EuiIcon, EuiToolTip, useEuiTheme } from '@elastic/eui';
 import { useTheme } from '../theme';
 import { themeSwitcherStyles } from './theme_switcher.styles';
 
@@ -26,11 +21,7 @@ const ThemeSwitcher: FunctionComponent = () => {
       <EuiHeaderSectionItemButton
         aria-label="Change theme"
         onClick={() => handleChangeTheme(lightOrDark)}>
-        <EuiIcon
-          type={isDarkTheme ? 'sun' : 'moon'}
-          aria-hidden="true"
-          css={styles.animation}
-        />
+        <EuiIcon type={isDarkTheme ? 'sun' : 'moon'} aria-hidden="true" css={styles.animation} />
       </EuiHeaderSectionItemButton>
     </EuiToolTip>
   );

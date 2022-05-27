@@ -1,11 +1,5 @@
 import Link from 'next/link';
-import {
-  EuiHeader,
-  EuiTitle,
-  useEuiTheme,
-  EuiHeaderLinks,
-  EuiHeaderLink,
-} from '@elastic/eui';
+import { EuiHeader, EuiTitle, useEuiTheme, EuiHeaderLinks, EuiHeaderLink } from '@elastic/eui';
 import ThemeSwitcher from './theme_switcher';
 import { headerStyles } from './header.styles';
 

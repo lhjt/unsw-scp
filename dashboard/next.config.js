@@ -79,9 +79,7 @@ const nextConfig = {
       });
 
       // Mock HTMLElement on the server-side
-      const definePluginId = config.plugins.findIndex(
-        p => p.constructor.name === 'DefinePlugin'
-      );
+      const definePluginId = config.plugins.findIndex(p => p.constructor.name === 'DefinePlugin');
 
       config.plugins[definePluginId].definitions = {
         ...config.plugins[definePluginId].definitions,
@@ -133,14 +131,7 @@ module.exports = withBundleAnalyzer({
  */
 function buildThemeConfig() {
   const themeFiles = glob.sync(
-    path.join(
-      __dirname,
-      'node_modules',
-      '@elastic',
-      'eui',
-      'dist',
-      'eui_theme_*.min.css'
-    )
+    path.join(__dirname, 'node_modules', '@elastic', 'eui', 'dist', 'eui_theme_*.min.css')
   );
 
   const themeConfig = {
@@ -153,8 +144,7 @@ function buildThemeConfig() {
 
     const themeId = basename.replace(/^eui_theme_/, '');
 
-    const themeName =
-      themeId[0].toUpperCase() + themeId.slice(1).replace(/_/g, ' ');
+    const themeName = themeId[0].toUpperCase() + themeId.slice(1).replace(/_/g, ' ');
 
     const publicPath = `themes/${basename}.${hashFile(each)}.min.css`;
     const toPath = path.join(
@@ -239,7 +229,5 @@ function derivePathPrefix() {
     return '/' + packageName.split('/').pop();
   }
 
-  throw new Error(
-    "Can't derive path prefix, as neither .git/config nor package.json exists"
-  );
+  throw new Error("Can't derive path prefix, as neither .git/config nor package.json exists");
 }

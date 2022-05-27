@@ -2,7 +2,7 @@
   "bracketSameLine": true,
   "jsxSingleQuote": false,
   "parser": "typescript",
-  "printWidth": 80,
+  "printWidth": 100,
   "semi": true,
   "singleQuote": true,
   "trailingComma": "es5",

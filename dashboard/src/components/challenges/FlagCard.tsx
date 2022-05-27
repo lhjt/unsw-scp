@@ -14,21 +14,18 @@ interface FlagCardProps {
   displayName: string;
   submissionDetails?: string;
   points: number;
+  services: string[];
 }
 
 const FlagCard: FunctionComponent<FlagCardProps> = ({
   displayName,
   submissionDetails,
   points,
+  services,
 }) => {
   return (
-    <EuiCard
-      css={{ margin: '1rem', flexBasis: 400 }}
-      textAlign="left"
-      title={displayName}>
-      <EuiBadge>
-        {points > 1 || points == 0 ? `${points} Points` : `1 Point`}
-      </EuiBadge>
+    <EuiCard css={{ margin: '1rem', flexBasis: 400 }} textAlign="left" title={displayName}>
+      <EuiBadge>{points > 1 || points == 0 ? `${points} Points` : `1 Point`}</EuiBadge>
       {submissionDetails ? (
         <EuiBadge color="success">{submissionDetails}</EuiBadge>
       ) : (
@@ -38,14 +35,20 @@ const FlagCard: FunctionComponent<FlagCardProps> = ({
 
       <EuiText size="s">
         <h4>Related Services</h4>
-        <EuiCard
-          onClick={() => {
-            window.open('https://hello.ctf.local.host/', '_blank');
-          }}
-          css={{ marginBottom: '1rem', marginTop: '1rem' }}
-          title="hello.ctf.local.host">
-          <EuiLink>Visit this service</EuiLink>
-        </EuiCard>
+        {services.map(s => (
+          <EuiCard
+            key={s}
+            onClick={() => {
+              window.open(
+                `https://${s}.ctf.${process.env.BASE_DOMAIN ?? 'local.host:8443'}/`,
+                '_blank'
+              );
+            }}
+            css={{ marginBottom: '1rem', marginTop: '1rem' }}
+            title={`${s}.ctf.${process.env.BASE_DOMAIN ?? 'local.host:8443'}`}>
+            <EuiLink>Visit this service</EuiLink>
+          </EuiCard>
+        ))}
       </EuiText>
       <EuiSpacer />
       {!submissionDetails && (

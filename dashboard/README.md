@@ -1,7 +1,3 @@
-<p align="center">
-  <img src="https://repository-images.githubusercontent.com/233832487/cddf0ff5-a35f-4380-8912-1c9f365366a8" alt="EUI Next.js Starter"/>
-</p>
-
 # Elastic's Next.js EUI Starter
 
 
@@ -9,12 +5,16 @@ Jump right in to building prototypes with [EUI](https://github.com/elastic/eui).
 
 _🚩 This starter is not constantly maintained and may get out of sync with the latest EUI release._
 
-## 🚀 Super-quick start using CodeSandbox
+## Deployment
 
-1. Go to
-   [https://codesandbox.io/s/github/elastic/next-eui-starter](https://codesandbox.io/s/github/elastic/next-eui-starter)
-   and start editing. CodeSandbox will fork the sandbox when you make
-   changes!
+### Environment Variables
+
+| Variable | Description | Default |
+| -- | -- | -- |
+| `GAIA_ADDR` | The address at which gaia is accessible at. | `gaia-backend:8081` |
+|`ROUTER_URL` | The address at which the routing service is available at. | `router:8082` |
+|`BASE_DOMAIN` | The public base domain on which the proxy is running. | `local.host:8443` |
+
 
 ## 🚀 Quick start
 
@@ -53,23 +53,6 @@ _🚩 This starter is not constantly maintained and may get out of sync with the
     Your site is now running at `http://localhost:3000`!
 
     Open the `my-eui-starter` directory in your code editor of choice and edit `src/pages/index.tsx`. Save your changes and the browser will update in real time!
-
-1. **Deploy your site to GitHub Pages**
-
-    When you're ready to deploy and share your site to GitHub Pages, you can use the provided `yarn build-docs` script to do so. The first time you do this, you need to do some preparation:
-
-    1. (Optional) If you need to, set the `pathPrefix` option in `next.config.js` to reflect the name of your GitHub repo. The starter kit will try to derive this itself, so you're unlikely to see to do anything here.
-    1. (Optional) Commit the above change
-    1. Create the GitHub pages branch: `git branch gh-pages`
-
-    Then whenever you want to update your site:
-
-    1. Commit any pending changes
-    1. Run `yarn build-docs`
-    1. Publish the `master` and `gh-pages` branches by pushing them to GitHub: `git push origin master gh-pages`
-    1. Edit your repository settings to ensure your repository is configured so that the `gh-pages` branch is used for serving the site. (You only need to do this once, but you have to push the branch before you can change this setting)
-    1. Access your site at https://your-username.github.io/repo-name. There
-       can be a slight delay before changes become visible.
 
 ---
 

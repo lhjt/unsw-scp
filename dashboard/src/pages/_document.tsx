@@ -65,10 +65,7 @@ export default class MyDocument extends Document {
             property="og:image"
             content="https://repository-images.githubusercontent.com/233832487/cddf0ff5-a35f-4380-8912-1c9f365366a8"
           />
-          <meta
-            property="og:url"
-            content="https://elastic.github.io/next-eui-starter/"
-          />
+          <meta property="og:url" content="https://elastic.github.io/next-eui-starter/" />
           <meta name="twitter:card" content="summary_large_image" />
           <meta name="eui-styles-global" />
 

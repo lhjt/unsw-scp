@@ -1,10 +1,4 @@
-import {
-  FunctionComponent,
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-} from 'react';
+import { FunctionComponent, createContext, useContext, useState, useEffect } from 'react';
 import { getTheme, enableTheme } from '../lib/theme';
 
 /**

@@ -1,9 +1,5 @@
 module.exports = {
-  extends: [
-    'plugin:@typescript-eslint/recommended',
-    'prettier',
-    'next/core-web-vitals',
-  ],
+  extends: ['plugin:@typescript-eslint/recommended', 'prettier', 'next/core-web-vitals'],
   plugins: ['prettier'],
   rules: {
     // In an ideal world, we'd never have to use @ts-ignore, but that's not

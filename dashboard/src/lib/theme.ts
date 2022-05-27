@@ -25,10 +25,7 @@ export function enableTheme(newThemeName: string): void {
   // Add a class to the `body` element that indicates which theme we're using.
   // This allows any custom styling to adapt to the current theme.
   if (document.body.classList.contains(`appTheme-${oldThemeName}`)) {
-    document.body.classList.replace(
-      `appTheme-${oldThemeName}`,
-      `appTheme-${newThemeName}`
-    );
+    document.body.classList.replace(`appTheme-${oldThemeName}`, `appTheme-${newThemeName}`);
   } else {
     document.body.classList.add(`appTheme-${newThemeName}`);
   }

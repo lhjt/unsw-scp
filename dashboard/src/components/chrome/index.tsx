@@ -28,9 +28,7 @@ const Chrome: FunctionComponent = ({ children }) => {
   });
 
   return (
-    <EuiProvider
-      colorMode={colorMode as EuiThemeColorMode}
-      cache={emotionCache}>
+    <EuiProvider colorMode={colorMode as EuiThemeColorMode} cache={emotionCache}>
       {children}
     </EuiProvider>
   );
