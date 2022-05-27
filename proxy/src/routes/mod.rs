@@ -22,6 +22,9 @@ use crate::{
     middleware::Email,
     router_utils::{self, EvaluationErrors},
     BASE_DOMAIN,
+    DASHBOARD_ADDR,
+    GAIA_BE_ADDR,
+    GAIA_FE_ADDR,
     ROUTER_URL,
 };
 
@@ -51,9 +54,9 @@ pub(crate) async fn route_whoami(
         // return Ok(HttpResponse::Unauthorized().body("You are missing your certificate."));
         // Make a more elegant page
         if req.path() == "/enrol" || req.path().starts_with("/_next") {
-            new_url = Url::parse("http://gaia-frontend:80").unwrap();
+            new_url = Url::parse(&format!("http://{}", GAIA_FE_ADDR.as_str())).unwrap();
         } else {
-            new_url = Url::parse("http://gaia-backend:8081").unwrap();
+            new_url = Url::parse(&format!("http://{}", GAIA_BE_ADDR.as_str())).unwrap();
         }
     } else {
         // TODO: grab the subdomain
@@ -95,7 +98,8 @@ pub(crate) async fn route_whoami(
                         new_url = Url::parse(&format!("http://{}", ROUTER_URL.as_str())).unwrap();
                     } else {
                         // TODO: Show the dashboard
-                        new_url = Url::parse("http://dashboard:3000").unwrap();
+                        new_url =
+                            Url::parse(&format!("http://{}", DASHBOARD_ADDR.as_str())).unwrap();
                     }
                 },
             },

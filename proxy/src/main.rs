@@ -23,6 +23,9 @@ static ROUTER_URL: Lazy<String> = env_utils::lazy_env!("ROUTER_URL", "router:808
 static CA_CERT: Lazy<String> = env_utils::lazy_env!("CA_CERT", "certs/rootCA.pem");
 static SERVER_CERT: Lazy<String> = env_utils::lazy_env!("SERVER_CERT", "certs/server-cert.pem");
 static SERVER_KEY: Lazy<String> = env_utils::lazy_env!("SERVER_KEY", "certs/server-key.pem");
+static GAIA_BE_ADDR: Lazy<String> = env_utils::lazy_env!("GAIA_BE_ADDR", "gaia-backend");
+static GAIA_FE_ADDR: Lazy<String> = env_utils::lazy_env!("GAIA_FE_ADDR", "gaia-frontend");
+static DASHBOARD_ADDR: Lazy<String> = env_utils::lazy_env!("DASHBOARD_ADDR", "dashboard");
 
 #[tokio::main]
 async fn main() -> std::io::Result<()> {
