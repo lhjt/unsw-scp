@@ -10,9 +10,9 @@
         "export": "next export"
     },
     "dependencies": {
-        "@geist-ui/react": "^2.2.5",
-        "@stitches/react": "^1.2.8",
-        "inter-ui": "^3.19.3",
+        "@geist-ui/react": "2.2.5",
+        "@stitches/react": "1.2.8",
+        "inter-ui": "3.19.3",
         "next": "12.1.6",
         "react": "18.1.0",
         "react-dom": "18.1.0"
