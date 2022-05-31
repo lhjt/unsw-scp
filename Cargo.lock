@@ -3308,11 +3308,10 @@ dependencies = [
 
 [[package]]
 name = "sea-orm-migration"
-version = "0.8.2"
+version = "0.8.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6be15a93dc65a67bb3615fc0fe45c22581b25b27123520e18fb66cd87f429f4c"
+checksum = "15589f057677f57bea393572bd8eb9e8feb843a5f09b4fa518be6cef3a6ffedc"
 dependencies = [
- "async-std",
  "async-trait",
  "clap",
  "dotenv",
