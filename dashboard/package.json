@@ -36,9 +36,9 @@
   },
   "devDependencies": {
     "@elastic/datemath": "5.0.3",
-    "@emotion/babel-plugin": "11.7.2",
+    "@emotion/babel-plugin": "11.9.2",
     "@emotion/cache": "11.7.1",
-    "@emotion/react": "11.8.2",
+    "@emotion/react": "11.9.0",
     "@next/bundle-analyzer": "12.1.0",
     "@types/node": "16.11.36",
     "@typescript-eslint/eslint-plugin": "5.14.0",
