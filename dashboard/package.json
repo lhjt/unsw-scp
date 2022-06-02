@@ -61,6 +61,6 @@
     "typescript-plugin-css-modules": "3.4.0"
   },
   "resolutions": {
-    "trim": "0.0.3"
+    "trim": "1.0.1"
   }
 }
