@@ -4,7 +4,7 @@ specifiers:
   '@geist-ui/react': 2.2.5
   '@stitches/react': 1.2.8
   '@types/node': 17.0.35
-  '@types/react': 18.0.11
+  '@types/react': 18.0.25
   '@types/react-dom': 18.0.5
   eslint: 8.16.0
   eslint-config-next: 12.1.6
@@ -24,7 +24,7 @@ dependencies:
 
 devDependencies:
   '@types/node': 17.0.35
-  '@types/react': 18.0.11
+  '@types/react': 18.0.25
   '@types/react-dom': 18.0.5
   eslint: 8.16.0
   eslint-config-next: 12.1.6_k6khgwrcmlpd2kpaxkviqw2zii
@@ -242,11 +242,11 @@ packages:
   /@types/react-dom/18.0.5:
     resolution: {integrity: sha512-OWPWTUrY/NIrjsAPkAk1wW9LZeIjSvkXRhclsFO8CZcZGCOg2G0YZy4ft+rOyYxy8B7ui5iZzi9OkDebZ7/QSA==}
     dependencies:
-      '@types/react': 18.0.11
+      '@types/react': 18.0.25
     dev: true
 
-  /@types/react/18.0.11:
-    resolution: {integrity: sha512-JxSwm54IgMW4XTR+zFF5QpNx4JITmFbB4WHR2J0vg9RpjNeyqEMlODXsD2e64br6GX70TL0UYjZJETpyyC1WdA==}
+  /@types/react/18.0.25:
+    resolution: {integrity: sha512-xD6c0KDT4m7n9uD4ZHi02lzskaiqcBxf4zi+tXZY98a04wvc0hi/TcCPC2FOESZi51Nd7tlUeOJY8RofL799/g==}
     dependencies:
       '@types/prop-types': 15.7.5
       '@types/scheduler': 0.16.2
